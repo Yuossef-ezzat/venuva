@@ -1,0 +1,65 @@
+package com.example.venuva.Infrastructure.PresentaionLayer.Controllers;
+
+import com.example.venuva.Core.ServiceLayer.AuthService;
+import com.example.venuva.Shared.Dtos.AuthDtos.AuthResponse;
+import com.example.venuva.Shared.Dtos.AuthDtos.LoginRequest;
+import com.example.venuva.Shared.Dtos.AuthDtos.RegisterRequest;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/auth")
+@RequiredArgsConstructor
+public class AuthController {
+
+    private final AuthService authService;
+
+    // ===== POST /api/auth/login =====
+    // Authenticate user and return JWT token
+    @PostMapping("/login")
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
+        AuthResponse response = authService.login(request);
+        return ResponseEntity.ok(response);
+    }
+
+    // ===== POST /api/auth/register =====
+    // Register a new regular user
+    @PostMapping("/register")
+    public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
+        AuthResponse response = authService.register(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    // ===== POST /api/auth/register/organizer =====
+    // Register a new organizer (admin only)
+    @PostMapping("/register/organizer")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<AuthResponse> registerOrganizer(@Valid @RequestBody RegisterRequest request) {
+        AuthResponse response = authService.registerOrganizer(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    // ===== GET /api/auth/me =====
+    // Get current authenticated user info
+    @GetMapping("/me")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<AuthResponse> getCurrentUser(
+            @AuthenticationPrincipal UserDetails userDetails) {
+        AuthResponse response = authService.getCurrentUser(userDetails.getUsername());
+        return ResponseEntity.ok(response);
+    }
+
+    // ===== GET /api/auth/check-email =====
+    // Check if an email is already registered
+    @GetMapping("/check-email")
+    public ResponseEntity<Boolean> checkEmail(@RequestParam String email) {
+        boolean exists = authService.checkEmail(email);
+        return ResponseEntity.ok(exists);
+    }
+}

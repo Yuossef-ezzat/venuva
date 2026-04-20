@@ -6,9 +6,9 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class Error {
+    public static final Error NONE = new Error("");
 
-    public static final Error NONE = new Error("", null);
+    private final String message;
 
-    private final String code;
-    private final String description;
 }
+

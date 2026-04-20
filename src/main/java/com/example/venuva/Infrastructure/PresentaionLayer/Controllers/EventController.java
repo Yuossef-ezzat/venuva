@@ -1,6 +1,7 @@
 package com.example.venuva.Infrastructure.PresentaionLayer.Controllers;
 
-import com.example.venuva.Core.ServiceLayer.IEventService;
+import com.example.venuva.Core.Domain.Abstractions.Result;
+import com.example.venuva.Core.ServiceAbstraction.IEventService;
 import com.example.venuva.Shared.Dtos.EventDtos.AllEventsDto;
 import com.example.venuva.Shared.Dtos.EventDtos.CreateEventDto;
 import com.example.venuva.Shared.Dtos.EventDtos.DetailedEventDto;
@@ -20,53 +21,49 @@ public class EventController {
 
     private final IEventService eventService;
 
-    // ===== GET /api/events =====
-    // Get all events (public)
     @GetMapping
-    public ResponseEntity<List<AllEventsDto>> getAll() {
-        List<AllEventsDto> events = eventService.getAll();
-        return ResponseEntity.ok(events);
+    public ResponseEntity<Result<List<AllEventsDto>>> getAll() {
+
+        Result<List<AllEventsDto>> result = eventService.getAll();
+
+        return ResponseEntity.ok(result);
     }
 
-    // ===== GET /api/events/{id} =====
-    // Get event details by ID (public)
     @GetMapping("/{id}")
-    public ResponseEntity<DetailedEventDto> getById(@PathVariable int id) {
-        return eventService.getById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<Result<DetailedEventDto>> getById(@PathVariable int id) {
+
+        Result<DetailedEventDto> result = eventService.getById(id);
+
+        return ResponseEntity.ok(result);
     }
 
-    // ===== POST /api/events =====
-    // Create a new event (organizer/admin only)
     @PostMapping
     @PreAuthorize("hasRole('ORGANIZER') or hasRole('ADMIN')")
-    public ResponseEntity<Integer> create(@Valid @RequestBody CreateEventDto dto) {
-        int newEventId = eventService.add(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(newEventId);
+    public ResponseEntity<Result<Integer>> create(@Valid @RequestBody CreateEventDto dto) {
+
+        Result<Integer> result = eventService.add(dto);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
-    // ===== PUT /api/events/{id} =====
-    // Update an existing event (organizer/admin only)
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ORGANIZER') or hasRole('ADMIN')")
-    public ResponseEntity<Void> update(
+    public ResponseEntity<Result<Boolean>> update(
             @PathVariable int id,
-            @Valid @RequestBody CreateEventDto dto) {
-        boolean updated = eventService.update(id, dto);
-        return updated
-                ? ResponseEntity.noContent().build()
-                : ResponseEntity.notFound().build();
+            @Valid @RequestBody DetailedEventDto dto) {
+
+        Result<Boolean> result = eventService.update(id, dto);
+
+        return ResponseEntity.ok(result);
     }
 
-    // ===== DELETE /api/events/{id} =====
-    // Delete an event (admin only)
+    // ================= DELETE =================
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> delete(@PathVariable int id) {
-        boolean deleted = eventService.delete(id);
-        return deleted
-                ? ResponseEntity.noContent().build()
-                : ResponseEntity.notFound().build();
+    public ResponseEntity<Result<Boolean>> delete(@PathVariable int id) {
+
+        Result<Boolean> result = eventService.delete(id);
+
+        return ResponseEntity.ok(result);
     }
 }

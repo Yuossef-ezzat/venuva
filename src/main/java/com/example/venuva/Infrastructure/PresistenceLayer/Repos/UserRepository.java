@@ -1,4 +1,4 @@
-package com.example.venuva.Infrastructure.PresistenceLayer.Data.Repos;
+package com.example.venuva.Infrastructure.PresistenceLayer.Repos;
 import com.example.venuva.Core.Domain.Models.UserDetails.User;
 
 import org.springframework.data.jpa.repository.JpaRepository;

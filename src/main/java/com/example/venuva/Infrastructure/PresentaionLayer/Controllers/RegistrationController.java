@@ -1,77 +1,70 @@
 package com.example.venuva.Infrastructure.PresentaionLayer.Controllers;
 
-import com.example.venuva.Core.ServiceLayer.RegistrationService;
-import com.example.venuva.Shared.Dtos.*;
-import com.example.venuva.Shared.Enums.RegistrationStatus;
-import jakarta.validation.Valid;
+import com.example.venuva.Core.ServiceAbstraction.IRegistrationService;
+import com.example.venuva.Shared.Dtos.RegisterationDto.CancleRegisrationDto;
+import com.example.venuva.Shared.Dtos.RegisterationDto.RegistrationRequestDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/registrations")
 @RequiredArgsConstructor
+@Validated
 public class RegistrationController {
 
-    private final RegistrationService registrationService;
+    private final IRegistrationService registrationService;
 
-    // ===== POST /api/registrations =====
-    // Register current user to an event
-    @PostMapping
-    @PreAuthorize("hasRole('USER') or hasRole('ORGANIZER') or hasRole('ADMIN')")
-    public ResponseEntity<RegistrationResponse> register(
-            @Valid @RequestBody CreateRegistrationDto dto) {
-        RegistrationResponse response = registrationService.register(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    // =========================
+    // Register user to event
+    // =========================
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody RegistrationRequestDto requestDto) {
+
+        var result = registrationService.registerUserToEvent(requestDto);
+
+        if (!result.isSuccess()) {
+            return ResponseEntity.badRequest().body(result.getError());
+        }
+
+        return ResponseEntity.ok(result.getValue());
     }
 
-    // ===== GET /api/registrations/{id} =====
-    @GetMapping("/{id}")
-    @PreAuthorize("hasRole('USER') or hasRole('ORGANIZER') or hasRole('ADMIN')")
-    public ResponseEntity<RegistrationResponse> getById(@PathVariable int id) {
-        RegistrationResponse response = registrationService.getById(id);
-        return ResponseEntity.ok(response);
+    // =========================
+    // Get user registrations
+    // =========================
+    @GetMapping("/{userId}")
+    @PreAuthorize("hasRole('Attendee') or hasRole('Admin')")
+    public ResponseEntity<?> getUserRegistrations(@PathVariable int userId) {
+
+        var result = registrationService.getUserRegistrations(userId);
+
+        if (!result.isSuccess()) {
+            return ResponseEntity.status(404).body(result.getError());
+        }
+
+        return ResponseEntity.ok(result.getValue());
     }
 
-    // ===== GET /api/registrations/user/{userId} =====
-    // Get all registrations for a specific user
-    @GetMapping("/user/{userId}")
-    @PreAuthorize("hasRole('USER') or hasRole('ORGANIZER') or hasRole('ADMIN')")
-    public ResponseEntity<List<RegistrationResponse>> getByUser(@PathVariable int userId) {
-        List<RegistrationResponse> registrations = registrationService.getByUser(userId);
-        return ResponseEntity.ok(registrations);
+    // =========================
+    // Cancel registration
+    // =========================
+    @DeleteMapping("/cancel")
+    public ResponseEntity<?> cancelRegistration(@RequestBody CancleRegisrationDto dto) {
+
+        var result = registrationService.cancelRegistration(dto);
+
+        if (!result.isSuccess()) {
+            return ResponseEntity.badRequest().body(result.getError());
+        }
+
+        return ResponseEntity.ok(
+                new MessageResponse("You are cancelled successfully")
+        );
     }
 
-    // ===== GET /api/registrations/event/{eventId} =====
-    // Get all registrations for a specific event (organizer/admin only)
-    @GetMapping("/event/{eventId}")
-    @PreAuthorize("hasRole('ORGANIZER') or hasRole('ADMIN')")
-    public ResponseEntity<List<RegistrationResponse>> getByEvent(@PathVariable int eventId) {
-        List<RegistrationResponse> registrations = registrationService.getByEvent(eventId);
-        return ResponseEntity.ok(registrations);
-    }
-
-    // ===== PUT /api/registrations/{id}/status =====
-    // Update registration status (e.g. after payment confirmation)
-    @PutMapping("/{id}/status")
-    @PreAuthorize("hasRole('ORGANIZER') or hasRole('ADMIN')")
-    public ResponseEntity<RegistrationResponse> updateStatus(
-            @PathVariable int id,
-            @RequestParam RegistrationStatus status) {
-        RegistrationResponse response = registrationService.updateStatus(id, status);
-        return ResponseEntity.ok(response);
-    }
-
-    // ===== DELETE /api/registrations/{id} =====
-    // Cancel a registration
-    @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-    public ResponseEntity<Void> cancel(@PathVariable int id) {
-        registrationService.cancel(id);
-        return ResponseEntity.noContent().build();
-    }
+    // simple response class
+    public record MessageResponse(String message) {}
 }

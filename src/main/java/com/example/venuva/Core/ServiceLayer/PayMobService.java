@@ -1,7 +1,7 @@
 package com.example.venuva.Core.ServiceLayer;
 
 import com.example.venuva.Core.Domain.Models.UserDetails.User;
-import com.example.venuva.Infrastructure.PresistenceLayer.Data.Repos.UserRepository;
+import com.example.venuva.Infrastructure.PresistenceLayer.Repos.UserRepository;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;

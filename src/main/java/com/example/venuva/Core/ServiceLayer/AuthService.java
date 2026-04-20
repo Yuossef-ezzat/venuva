@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.venuva.Core.Domain.Models.UserDetails.Roles;
 import com.example.venuva.Core.Domain.Models.UserDetails.User;
-import com.example.venuva.Infrastructure.PresistenceLayer.Data.Repos.UserRepository;
+import com.example.venuva.Infrastructure.PresistenceLayer.Repos.UserRepository;
 import com.example.venuva.Shared.Dtos.AuthDtos.AuthResponse;
 import com.example.venuva.Shared.Dtos.AuthDtos.LoginRequest;
 import com.example.venuva.Shared.Dtos.AuthDtos.RegisterRequest;

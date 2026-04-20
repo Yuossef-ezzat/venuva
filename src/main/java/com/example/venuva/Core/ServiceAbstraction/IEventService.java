@@ -16,7 +16,7 @@ public interface IEventService {
 
     Result<Integer> add(CreateEventDto entity);
 
-    Result<Boolean> update(DetailedEventDto entity);
+    Result<Boolean> update(int id, DetailedEventDto entity);
 
     Result<Boolean> delete(Integer id);
 }

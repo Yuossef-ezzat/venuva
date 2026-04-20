@@ -1,4 +1,4 @@
-package com.example.venuva.Infrastructure.PresistenceLayer.Data.Repos;
+package com.example.venuva.Infrastructure.PresistenceLayer.Repos;
 
 import com.example.venuva.Core.Domain.Models.RegistrationModules.Registration;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,6 +11,8 @@ public interface RegistrationRepository extends JpaRepository<Registration, Inte
 
     int countByEventId(int eventId);
 
+    Registration findByEventIdAndUserId(int eventId, int userId);
+    
     List<Registration> findByEventId(int eventId);
 
     List<Registration> findByUserId(int userId);

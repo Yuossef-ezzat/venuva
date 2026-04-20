@@ -2,16 +2,17 @@ package com.example.venuva.Shared.Dtos.EventDtos;
 
 import com.example.venuva.Shared.Enums.EventStatus;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class DetailedEventDto {
 
     private int id;
@@ -23,13 +24,13 @@ public class DetailedEventDto {
     private EventStatus eventStatus;
     private boolean paymentRequired;
 
-    // Relations (flat)
+    // Relations
     private int organizerId;
-    private String organizerEmail;
+    private String organizerName;
     private int categoryId;
     private String categoryName;
 
-    // Counts instead of full nested lists (avoids over-fetching)
-    private int registrationsCount;
-    private int paymentsCount;
+    private List<String> registrations;
+    private List<String> payments;
+    private List<String> notifications;
 }

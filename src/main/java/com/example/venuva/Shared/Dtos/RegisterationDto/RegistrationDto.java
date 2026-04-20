@@ -1,26 +1,31 @@
 package com.example.venuva.Shared.Dtos.RegisterationDto;
 
-import com.example.venuva.Shared.Enums.RegistrationStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class RegistrationResponse {
+public class RegistrationDto {
 
-    private int id;
-    private RegistrationStatus registrationStatus;
+    private int registrationId;
 
-    // User info (flat)
     private int userId;
-    private String username;
+    private String userName;
+    private String userEmail;
 
-    // Event info (flat)
     private int eventId;
     private String eventTitle;
+    private LocalDateTime eventDate;
     private String eventLocation;
+    private boolean paymentRequired;
+
+    private String status;
+    private String paymentStatus;
+    private LocalDateTime registeredAt;
 }

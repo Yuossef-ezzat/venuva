@@ -32,8 +32,6 @@ public class NotificationService {
                 .orElseThrow(() -> new RuntimeException("Event not found"));
 
         Notification notification = new Notification();
-        notification.setUser(user);
-        notification.setEvent(event);
         notification.setMessage(dto.getMessage());
         notification.setDate(LocalDateTime.now());
 
@@ -54,8 +52,6 @@ public class NotificationService {
 
         for (User user : registrants) {
             Notification notification = new Notification();
-            notification.setUser(user);
-            notification.setEvent(event);
             notification.setMessage(message);
             notification.setDate(LocalDateTime.now());
             notificationRepository.save(notification);
@@ -98,11 +94,7 @@ public class NotificationService {
         return new NotificationResponse(
                 n.getId(),
                 n.getMessage(),
-                n.getDate(),
-                n.getUser().getId(),
-                n.getUser().getUsername(),
-                n.getEvent().getId(),
-                n.getEvent().getTitle()
+                n.getDate()
         );
     }
 }

@@ -1,7 +1,7 @@
 package com.example.venuva.Core.ServiceLayer;
 
 import com.example.venuva.Core.Domain.Models.EventModule.*;
-import com.example.venuva.Core.Domain.Models.RegistrationModule.*;
+import com.example.venuva.Core.Domain.Models.RegistrationModules.Registration;
 import com.example.venuva.Core.Domain.Models.UserDetails.User;
 import com.example.venuva.Infrastructure.PresistenceLayer.Data.Repos.EventRepository;
 import com.example.venuva.Infrastructure.PresistenceLayer.Data.Repos.RegistrationRepository;

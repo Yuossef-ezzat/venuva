@@ -8,7 +8,7 @@ import com.example.venuva.Core.Domain.Models.BaseEntity;
 import com.example.venuva.Core.Domain.Models.UserDetails.User;
 import com.example.venuva.Shared.Enums.PaymentStatus;
 
-import io.micrometer.observation.Observation.Event;
+import com.example.venuva.Core.Domain.Models.EventModule.*;
 
 @Entity
 @Table(name = "payments")

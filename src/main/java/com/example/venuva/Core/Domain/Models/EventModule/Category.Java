@@ -1,6 +1,7 @@
-package com.example.eventsystem.domain.models.eventmodule;
+package com.example.venuva.Core.Domain.Models.EventModule;
 
 import jakarta.persistence.*;
+import com.example.venuva.Core.Domain.Models.BaseEntity;
 import java.util.List;
 
 @Entity

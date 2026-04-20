@@ -1,8 +1,15 @@
-package com.example.eventsystem.domain.models.eventmodule;
+package com.example.venuva.Core.Domain.Models.EventModule;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import com.example.venuva.Core.Domain.Models.BaseEntity;
+import com.example.venuva.Core.Domain.Models.UserDetails.User;
+import com.example.venuva.Core.Domain.Models.RegistrationModules.Registration;
+import com.example.venuva.Core.Domain.Models.PaymentModule.Payment;
+import com.example.venuva.Core.Domain.Models.NotificationModule.Notification;
+import com.example.venuva.Shared.Enums.EventStatus;
 
 @Entity
 @Table(name = "events")
@@ -28,7 +35,7 @@ public class Event extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "organizer_id", nullable = false)
-    private ApplicationUser organizer;
+    private User organizer;
 
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
@@ -101,11 +108,11 @@ public class Event extends BaseEntity {
         this.paymentRequired = paymentRequired;
     }
 
-    public ApplicationUser getOrganizer() {
+    public User getOrganizer() {
         return organizer;
     }
 
-    public void setOrganizer(ApplicationUser organizer) {
+    public void setOrganizer(User organizer) {
         this.organizer = organizer;
     }
 

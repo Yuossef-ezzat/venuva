@@ -1,9 +1,9 @@
 package com.example.venuva.Core.Domain.Models.RegistrationModules;
 
+import com.example.venuva.Core.Domain.Models.EventModule.Event;
 import com.example.venuva.Core.Domain.Models.UserDetails.User;
 import com.example.venuva.Shared.Enums.RegistrationStatus;
 
-import io.micrometer.observation.Observation.Event;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

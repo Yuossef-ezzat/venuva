@@ -9,7 +9,6 @@ import java.util.List;
 import com.example.venuva.Core.Domain.Models.UserDetails.User;
 import com.example.venuva.Core.Domain.Models.RegistrationModules.Registration;
 import com.example.venuva.Core.Domain.Models.PaymentModule.Payment;
-import com.example.venuva.Core.Domain.Models.NotificationModule.Notification;
 import com.example.venuva.Shared.Enums.EventStatus;
 
 @Entity
@@ -56,7 +55,4 @@ public class Event {
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     private List<Payment> payments;
-
-    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
-    private List<Notification> notifications;
 }

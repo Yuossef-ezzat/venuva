@@ -29,12 +29,9 @@ import java.util.stream.Collectors;
 public class NotifService implements INotifService {
 
     private final EmailService emailService;
-    private final UserRepository userNotifRepo;
-    // private final NotificationRepository notifRepo;
-    // private final UserDetailsService userDetailsService;
-    private final IGenericRepository<UserNotification, Integer> userNotifRepoGeneric;
-    private final IGenericRepository<Notification, Integer> notifRepo;
-    private final IGenericRepository<User, Integer> userRepo;
+    private final UserNotificationRepository userNotifRepoGeneric;
+    private final NotificationRepository notifRepo;
+    private final UserRepository userRepo;
     @Override
     public Result<List<NotifDTO>> getNotifsById(int id) {
         List<UserNotification> notifs = userNotifRepoGeneric.findAll()

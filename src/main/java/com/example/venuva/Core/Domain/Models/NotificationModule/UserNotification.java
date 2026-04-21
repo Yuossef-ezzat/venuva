@@ -19,8 +19,11 @@ public class UserNotification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+
+    @Column(name = "user_id")  
     private int userId;
 
+    @Column(name = "notif_id") 
     private int notifId;
 
     private boolean isRead = false;

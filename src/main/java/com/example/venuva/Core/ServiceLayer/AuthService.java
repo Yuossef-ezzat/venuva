@@ -87,10 +87,10 @@ public class AuthService {
         User user = User.builder()
                 .email(dto.getEmail())
                 .password(passwordEncoder.encode(dto.getPassword()))
-                .role(Roles.USER)
+                .role(Roles.ATTENDEE)
                 .enabled(true)
                 .build();
-
+        
         userRepository.save(user);
 
         String token = jwtService.generateToken(user.getEmail());

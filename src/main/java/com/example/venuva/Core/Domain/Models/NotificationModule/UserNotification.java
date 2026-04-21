@@ -1,6 +1,5 @@
 package com.example.venuva.Core.Domain.Models.NotificationModule;
 
-import com.example.venuva.Core.Domain.Models.BaseEntity;
 import com.example.venuva.Core.Domain.Models.UserDetails.User;
 
 import lombok.*;
@@ -14,7 +13,11 @@ import jakarta.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserNotification extends BaseEntity {
+public class UserNotification {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
     private int userId;
 
@@ -31,4 +34,12 @@ public class UserNotification extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "notif_id", insertable = false, updatable = false)
     private Notification notification;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 }

@@ -5,14 +5,17 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import com.example.venuva.Core.Domain.Models.EventModule.*;
-import com.example.venuva.Core.Domain.Models.BaseEntity;
 import com.example.venuva.Core.Domain.Models.UserDetails.User;
 import com.example.venuva.Shared.Enums.PaymentStatus;
 
 
 @Entity
 @Table(name = "payments")
-public class Payment extends BaseEntity {
+public class Payment {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
     // ===== Fields =====
 
@@ -73,5 +76,13 @@ public class Payment extends BaseEntity {
 
     public void setEvent(Event event) {
         this.event = event;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

@@ -4,11 +4,13 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.example.venuva.Core.Domain.Models.BaseEntity;
-
 @Entity
 @Table(name = "notifications")
-public class Notification extends BaseEntity {
+public class Notification {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
     private String message;
 
@@ -41,5 +43,13 @@ public class Notification extends BaseEntity {
 
     public void setUserNotifications(List<UserNotification> userNotifications) {
         this.userNotifications = userNotifications;
+    }
+
+    public int getNotifId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

@@ -1,7 +1,7 @@
 package com.example.venuva.Infrastructure.PresentaionLayer.Controllers;
 
-import com.example.venuva.Core.ServiceLayer.NotificationService;
-import com.example.venuva.Shared.Dtos.*;
+import com.example.venuva.Core.ServiceLayer.*;
+import com.example.venuva.Shared.Dtos.Notifs.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,7 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class NotificationController {
 
-    private final NotificationService notificationService;
+    private final NotifService notificationService;
 
     // ===== POST /api/notifications =====
     // Send a notification to a specific user about an event
@@ -27,6 +27,8 @@ public class NotificationController {
         NotificationResponse response = notificationService.send(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
+    
 
     // ===== POST /api/notifications/event/{eventId}/broadcast =====
     // Send a notification to ALL registrants of an event

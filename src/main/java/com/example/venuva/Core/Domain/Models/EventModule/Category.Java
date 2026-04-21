@@ -1,12 +1,15 @@
 package com.example.venuva.Core.Domain.Models.EventModule;
 
 import jakarta.persistence.*;
-import com.example.venuva.Core.Domain.Models.BaseEntity;
 import java.util.List;
 
 @Entity
 @Table(name = "categories")
-public class Category extends BaseEntity {
+public class Category {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
     private String name;
 
@@ -29,5 +32,13 @@ public class Category extends BaseEntity {
 
     public void setEvents(List<Event> events) {
         this.events = events;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

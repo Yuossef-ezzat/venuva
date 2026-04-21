@@ -10,5 +10,9 @@ public class Error {
 
     private final String message;
 
+    public Error(String code, String message) {
+        this.message = message;
+    }
+
 }
 

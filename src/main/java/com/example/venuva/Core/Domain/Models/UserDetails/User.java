@@ -1,6 +1,5 @@
 package com.example.venuva.Core.Domain.Models.UserDetails;
 
-import com.example.venuva.Core.Domain.Models.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -17,7 +16,11 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class User extends BaseEntity implements UserDetails {
+public class User implements UserDetails {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
     @Column(nullable = false, unique = true)
     private String email;
@@ -39,6 +42,9 @@ public class User extends BaseEntity implements UserDetails {
         return List.of(
                 new SimpleGrantedAuthority("ROLE_" + role.name())
         );
+    }
+    public int getUserId() {
+        return id;
     }
 
     @Override

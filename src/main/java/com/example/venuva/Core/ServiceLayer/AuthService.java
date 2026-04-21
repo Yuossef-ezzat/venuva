@@ -17,72 +17,69 @@ import com.example.venuva.Shared.Dtos.AuthDtos.RegisterRequest;
 @RequiredArgsConstructor
 public class AuthService {
 
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
+        private final UserRepository userRepository;
+        private final PasswordEncoder passwordEncoder;
+        private final JwtService jwtService;
 
     // ===== Check Email =====
-    public boolean checkEmail(String email) {
-        return userRepository.findByEmail(email).isPresent();
-    }
+        public boolean checkEmail(String email) {
+                return userRepository.findByEmail(email).isPresent();
+                }
 
     // ===== Get Current User =====
-    public AuthResponse getCurrentUser(String email) {
+        public AuthResponse getCurrentUser(String email) {
 
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Email not found"));
+                User user = userRepository.findByEmail(email)
+                        .orElseThrow(() -> new RuntimeException("Email not found"));
 
-        String token = jwtService.generateToken(user.getEmail());
+                String token = jwtService.generateToken(user.getEmail(), user.getRole().name());
 
-        return new AuthResponse(
-                user.getEmail(),
-                user.getUsername(),
-                token
-        );
-    }
-
-    // ===== Login =====
-    public AuthResponse login(LoginRequest loginDto) {
-
-        User user = userRepository.findByEmail(loginDto.getEmail())
-                .orElseThrow(() -> new RuntimeException("Email not found"));
-
-        if (!passwordEncoder.matches(loginDto.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Unauthorized");
+                return new AuthResponse(
+                        user.getEmail(),
+                        user.getUsername(),
+                        token
+                );
         }
 
-        String token = jwtService.generateToken(user.getEmail());
+        public AuthResponse login(LoginRequest loginDto) {
 
-        return new AuthResponse(
-                user.getEmail(),
-                user.getUsername(),
-                token
-        );
-    }
+                User user = userRepository.findByEmail(loginDto.getEmail())
+                        .orElseThrow(() -> new RuntimeException("Email not found"));
 
-    // ===== Register Organizer =====
-    public AuthResponse registerOrganizer(RegisterRequest dto) {
+                if (!passwordEncoder.matches(loginDto.getPassword(), user.getPassword())) {
+                throw new RuntimeException("Unauthorized");
+                }
 
-        User user = User.builder()
-                .email(dto.getEmail())
-                .password(passwordEncoder.encode(dto.getPassword()))
-                .role(Roles.ORGANIZER)
-                .enabled(true)
-                .build();
+                String token = jwtService.generateToken(user.getEmail(), user.getRole().name());
 
-        userRepository.save(user);
+                return new AuthResponse(
+                        user.getEmail(),
+                        user.getUsername(),
+                        token
+                );
+        }
 
-        String token = jwtService.generateToken(user.getEmail());
+        public AuthResponse registerOrganizer(RegisterRequest dto) {
 
-        return new AuthResponse(
-                user.getEmail(),
-                user.getUsername(),
-                token
-        );
-    }
+                User user = User.builder()
+                        .email(dto.getEmail())
+                        .password(passwordEncoder.encode(dto.getPassword()))
+                        .role(Roles.ORGANIZER)
+                        .enabled(true)
+                        .build();
 
-    // ===== Register User =====
-    public AuthResponse register(RegisterRequest dto) {
+                userRepository.save(user);
+
+                String token = jwtService.generateToken(user.getEmail(), user.getRole().name());
+
+                return new AuthResponse(
+                        user.getEmail(),
+                        user.getUsername(),
+                        token
+                );
+        }
+
+        public AuthResponse register(RegisterRequest dto) {
 
         User user = User.builder()
                 .email(dto.getEmail())
@@ -93,12 +90,12 @@ public class AuthService {
         
         userRepository.save(user);
 
-        String token = jwtService.generateToken(user.getEmail());
+                String token = jwtService.generateToken(user.getEmail(), user.getRole().name());
 
-        return new AuthResponse(
-                user.getEmail(),
-                user.getUsername(),
-                token
-        );
-    }
+                return new AuthResponse(
+                        user.getEmail(),
+                        user.getUsername(),
+                        token
+                );
+        }
 }

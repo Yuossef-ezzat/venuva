@@ -1,8 +1,5 @@
 package com.example.venuva.Core.Domain.Models.RegistrationModules;
 
-import org.springframework.boot.ApplicationArguments;
-
-
 import com.example.venuva.Core.Domain.Models.BaseEntity;
 import com.example.venuva.Core.Domain.Models.EventModule.Event;
 import com.example.venuva.Core.Domain.Models.UserDetails.User;

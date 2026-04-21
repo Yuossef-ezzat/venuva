@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.example.venuva.Core.Domain.Abstractions.Result;
 import com.example.venuva.Core.Domain.Models.RegistrationModules.Registration;
-import com.example.venuva.Shared.Dtos.NotifDTO;
+import com.example.venuva.Shared.Dtos.Notifs.NotifDTO;
 
 public interface INotifService {
 

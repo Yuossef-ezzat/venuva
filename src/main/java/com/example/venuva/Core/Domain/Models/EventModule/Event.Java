@@ -6,7 +6,6 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.example.venuva.Core.Domain.Models.BaseEntity;
 import com.example.venuva.Core.Domain.Models.UserDetails.User;
 import com.example.venuva.Core.Domain.Models.RegistrationModules.Registration;
 import com.example.venuva.Core.Domain.Models.PaymentModule.Payment;
@@ -20,7 +19,11 @@ import com.example.venuva.Shared.Enums.EventStatus;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Event extends BaseEntity {
+public class Event {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
     private String title;
 

@@ -81,14 +81,14 @@ public class AuthService {
 
         public AuthResponse register(RegisterRequest dto) {
 
-                User user = User.builder()
-                        .email(dto.getEmail())
-                        .password(passwordEncoder.encode(dto.getPassword()))
-                        .role(Roles.USER)
-                        .enabled(true)
-                        .build();
-
-                userRepository.save(user);
+        User user = User.builder()
+                .email(dto.getEmail())
+                .password(passwordEncoder.encode(dto.getPassword()))
+                .role(Roles.ATTENDEE)
+                .enabled(true)
+                .build();
+        
+        userRepository.save(user);
 
                 String token = jwtService.generateToken(user.getEmail(), user.getRole().name());
 

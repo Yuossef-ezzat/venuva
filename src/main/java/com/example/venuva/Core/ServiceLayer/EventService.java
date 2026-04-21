@@ -172,12 +172,6 @@ public class EventService implements IEventService {
                     .toList()
         );
 
-        dto.setNotifications(
-                event.getNotifications().stream()
-                        .map(n -> String.valueOf(n.getId()))
-                        .toList()
-        );
-
         return Result.success(dto);
     }
 

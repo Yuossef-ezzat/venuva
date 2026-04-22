@@ -7,7 +7,6 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Service;
 
-import com.example.venuva.Core.Domain.Models.UserDetails.User;
 import com.example.venuva.Infrastructure.PresistenceLayer.Repos.UserRepository;
 
 import java.security.Key;
@@ -16,12 +15,12 @@ import java.util.List;
 
 @Data
 @Service
-@ConfigurationProperties(prefix = "jwt")
+@ConfigurationProperties(prefix = "app.jwt")
 
 public class JwtService {
     
     private String secret;
-    private long expiration;
+    private long expirationMs;
     private final UserRepository userRepository;
 
 
@@ -34,7 +33,7 @@ public class JwtService {
                 .setSubject(email)
                 .claim("role", role)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -49,12 +48,13 @@ public class JwtService {
     }
 
     public List<String> extractRoles(String token) {
-        String username = extractEmail(token);
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
 
-        User user = userRepository.findByEmail(username)
-                .orElseThrow();
-
-        return List.of(user.getRole().name());
+        return List.of(claims.get("role", String.class));
     }
 
 

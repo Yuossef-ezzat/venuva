@@ -1,7 +1,10 @@
 package com.example.venuva.Infrastructure.Config;
 
 import com.example.venuva.Infrastructure.JwtAuthenticationFilter;
+
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,6 +29,13 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    FilterRegistrationBean<JwtAuthenticationFilter> jwtFilterRegistration(JwtAuthenticationFilter filter) {
+        FilterRegistrationBean<JwtAuthenticationFilter> registrationBean = new FilterRegistrationBean<>(filter);
+        registrationBean.setEnabled(false); // Disable automatic registration
+        return registrationBean;
     }
 
     @Bean

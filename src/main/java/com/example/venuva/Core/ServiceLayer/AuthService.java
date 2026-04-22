@@ -82,6 +82,7 @@ public class AuthService {
         public AuthResponse register(RegisterRequest dto) {
 
         User user = User.builder()
+                .username(dto.getUsername())  // ← ناقصه
                 .email(dto.getEmail())
                 .password(passwordEncoder.encode(dto.getPassword()))
                 .role(Roles.ATTENDEE)

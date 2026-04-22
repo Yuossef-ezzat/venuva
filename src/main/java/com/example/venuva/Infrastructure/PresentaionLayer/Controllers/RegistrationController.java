@@ -36,7 +36,7 @@ public class RegistrationController {
     // Get user registrations
     // =========================
     @GetMapping("/{userId}")
-    @PreAuthorize("hasRole('Attendee') or hasRole('Admin')")
+    @PreAuthorize("hasRole('ATTENDEE') or hasRole('ADMIN')")
     public ResponseEntity<?> getUserRegistrations(@PathVariable int userId) {
 
         var result = registrationService.getUserRegistrations(userId);

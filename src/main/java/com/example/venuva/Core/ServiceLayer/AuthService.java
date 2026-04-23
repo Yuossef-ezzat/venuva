@@ -64,6 +64,7 @@ public class AuthService {
                 User user = User.builder()
                         .email(dto.getEmail())
                         .password(passwordEncoder.encode(dto.getPassword()))
+                        .username(dto.getUsername())
                         .role(Roles.ORGANIZER)
                         .enabled(true)
                         .build();
@@ -82,7 +83,7 @@ public class AuthService {
         public AuthResponse register(RegisterRequest dto) {
 
         User user = User.builder()
-                .username(dto.getUsername())  // ← ناقصه
+                .username(dto.getUsername())
                 .email(dto.getEmail())
                 .password(passwordEncoder.encode(dto.getPassword()))
                 .role(Roles.ATTENDEE)

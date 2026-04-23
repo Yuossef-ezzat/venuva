@@ -38,7 +38,7 @@ public class EventController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ORGANIZER') or hasRole('ADMIN')")
+    // @PreAuthorize("hasRole('ORGANIZER') or hasRole('ADMIN')")
     public ResponseEntity<Result<Integer>> create(@Valid @RequestBody CreateEventDto dto) {
 
         Result<Integer> result = eventService.add(dto);
@@ -47,7 +47,7 @@ public class EventController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ORGANIZER') or hasRole('ADMIN')")
+    // @PreAuthorize("hasRole('ORGANIZER') or hasRole('ADMIN')")
     public ResponseEntity<Result<Boolean>> update(
             @PathVariable int id,
             @Valid @RequestBody DetailedEventDto dto) {
@@ -59,7 +59,7 @@ public class EventController {
 
     // ================= DELETE =================
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    // @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Result<Boolean>> delete(@PathVariable int id) {
 
         Result<Boolean> result = eventService.delete(id);

@@ -1,8 +1,10 @@
 package com.example.venuva.Infrastructure.PresentaionLayer.Controllers;
 
 import com.example.venuva.Core.ServiceLayer.PayMobService;
+import com.example.venuva.Shared.Dtos.ErrorResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -20,16 +22,22 @@ public class PaymobController {
     // userId is passed as a query param (or extracted from JWT in production)
     @PostMapping("/pay")
     @PreAuthorize("hasRole('USER') or hasRole('ORGANIZER') or hasRole('ADMIN')")
-    public ResponseEntity<String> pay(
+    public ResponseEntity<?> pay(
             @RequestParam int amountCents,
             @RequestParam int userId) {
         try {
+            log.info("PaymobController.pay() called with userId={}, amountCents={}", userId, amountCents);
             String iframeUrl = payMobService.payWithCard(amountCents, userId);
+            log.info("PaymobController.pay() success: Payment URL generated for userId={}", userId);
             return ResponseEntity.ok(iframeUrl);
         } catch (Exception ex) {
-            log.error("Payment initiation failed for userId={}, amount={}", userId, amountCents, ex);
-            return ResponseEntity.internalServerError()
-                    .body("Payment initiation failed: " + ex.getMessage());
+            log.error("PaymobController.pay() failed: Payment initiation failed for userId={}, amount={}", 
+                    userId, amountCents, ex);
+            ErrorResponse error = new ErrorResponse(
+                    "Payment initiation failed. Please try again later",
+                    "PAYMENT_INIT_FAILED"
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
     }
 
@@ -41,19 +49,20 @@ public class PaymobController {
             @RequestBody PayMobService.PaymobCallbackPayload payload,
             @RequestParam(value = "hmac", required = false) String hmacHeader) {
         try {
-            log.info("Received PayMob callback: type={}", payload.type);
+            log.info("PaymobController.callback() received PayMob notification: type={}", payload.type);
             boolean success = payMobService.paymobCallback(payload, hmacHeader);
             if (success) {
-                log.info("PayMob callback processed successfully");
+                log.info("PaymobController.callback() processed successfully");
             } else {
-                log.warn("PayMob callback: payment was not successful or HMAC failed");
+                log.warn("PaymobController.callback() payment was not successful or HMAC verification failed");
             }
             // Always return 200 to PayMob so it doesn't retry
             return ResponseEntity.ok().build();
         } catch (Exception ex) {
-            log.error("Error processing PayMob callback", ex);
+            log.error("PaymobController.callback() error processing PayMob callback", ex);
             // Still return 200 to prevent PayMob retry loops
             return ResponseEntity.ok().build();
         }
     }
 }
+

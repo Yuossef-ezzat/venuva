@@ -2,6 +2,7 @@ package com.example.venuva.Infrastructure.PresentaionLayer.Controllers;
 
 import com.example.venuva.Core.Domain.Abstractions.Result;
 import com.example.venuva.Core.ServiceAbstraction.INotifService;
+import com.example.venuva.Infrastructure.Config.ResponseUtility;
 import com.example.venuva.Shared.Dtos.Notifs.NotifDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,19 +21,15 @@ public class NotificationController {
 
     // GET /api/notifications/{userId}
     @GetMapping("/{userId}")
-    public ResponseEntity<Result<List<NotifDTO>>> getNotifs(@PathVariable int userId) {
+    public ResponseEntity<?> getNotifs(@PathVariable int userId) {
         Result<List<NotifDTO>> result = notifService.getNotifsById(userId);
-        return result.isSuccess()
-                ? ResponseEntity.ok(result)
-                : ResponseEntity.badRequest().body(result);
+        return ResponseUtility.toResponse(result);
     }
 
     // PUT /api/notifications/mark-read/{notifId}
     @PutMapping("/mark-read/{notifId}")
-    public ResponseEntity<Result<NotifDTO>> markAsRead(@PathVariable int notifId) {
+    public ResponseEntity<?> markAsRead(@PathVariable int notifId) {
         Result<NotifDTO> result = notifService.markNotifAsRead(notifId);
-        return result.isSuccess()
-                ? ResponseEntity.ok(result)
-                : ResponseEntity.badRequest().body(result);
+        return ResponseUtility.toResponse(result);
     }
 }

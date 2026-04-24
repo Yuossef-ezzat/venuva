@@ -2,6 +2,7 @@ package com.example.venuva.Core.ServiceLayer;
 
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.stereotype.Service;
 
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class EventService implements IEventService {
 
     private final EventRepository repository;
@@ -35,12 +37,18 @@ public class EventService implements IEventService {
 
     @Override
     public Result<Integer> add(CreateEventDto dto) {
+        log.info("EventService.add() called with title='{}', organizerId={}, categoryId={}", 
+                dto.getTitle(), dto.getOrganizerId(), dto.getCategoryId());
 
-        if (dto.getDate().isBefore(LocalDateTime.now()))
+        if (dto.getDate().isBefore(LocalDateTime.now())) {
+            log.warn("EventService.add() failed: Event date must be in the future");
             return Result.failure(new Error("Event date must be in the future"));
+        }
 
-        if (dto.getMaxAttendance() <= 0)
+        if (dto.getMaxAttendance() <= 0) {
+            log.warn("EventService.add() failed: MaxAttendance must be greater than 0");
             return Result.failure(new Error("MaxAttendance must be greater than 0"));
+        }
 
         Category category = categoryRepository.findById(dto.getCategoryId())
             .orElseThrow(() -> new RuntimeException("Category not found"));
@@ -69,22 +77,28 @@ public class EventService implements IEventService {
                         " at " + event.getLocation()
         );
 
+        log.info("EventService.add() success: Event created with id={}", Entity.getId());
         return Result.success(Entity.getId());
     }
 
     @Override
     public Result<Boolean> delete(Integer id) {
+        log.info("EventService.delete() called with eventId={}", id);
 
         Event event = repository.findById(id).orElse(null);
 
-        if (event == null)
+        if (event == null) {
+            log.warn("EventService.delete() failed: Event not found for id={}", id);
             return Result.failure(new Error("Event not found"));
+        }
 
         repository.delete(event);
         boolean deleted = repository.findById(id).isEmpty();
 
-        if (!deleted)
+        if (!deleted) {
+            log.warn("EventService.delete() failed: Event with id={} could not be deleted", id);
             return Result.failure(new Error("Failed to delete event"));
+        }
 
         String formattedDate = event.getDate().format(DateTimeFormatter.ofPattern("MMMM dd, yyyy"));
 
@@ -94,16 +108,20 @@ public class EventService implements IEventService {
                         " at " + event.getLocation()
         );
 
+        log.info("EventService.delete() success: Event id={} deleted", id);
         return Result.success(true);
     }
 
     @Override
     public Result<List<AllEventsDto>> getAll() {
+        log.info("EventService.getAll() called");
 
         List<Event> events = repository.findAll();
 
-        if (events == null || events.isEmpty())
+        if (events == null || events.isEmpty()) {
+            log.warn("EventService.getAll() failed: No events found");
             return Result.failure(new Error("No Events"));
+        }
 
         List<AllEventsDto> dtos = events.stream().map(e -> {
 
@@ -128,16 +146,20 @@ public class EventService implements IEventService {
 
         }).collect(Collectors.toList());
 
+        log.info("EventService.getAll() success: {} events retrieved", dtos.size());
         return Result.success(dtos);
     }
 
     @Override
     public Result<DetailedEventDto> getById(Integer id) {
+        log.info("EventService.getById() called with eventId={}", id);
 
         Event event = repository.findById(id).orElse(null);
 
-        if (event == null)
+        if (event == null) {
+            log.warn("EventService.getById() failed: Event not found for id={}", id);
             return Result.failure(new Error("Event not found"));
+        }
 
         DetailedEventDto dto = new DetailedEventDto();
 
@@ -173,35 +195,47 @@ public class EventService implements IEventService {
                     .toList()
         );
 
+        log.info("EventService.getById() success: Event id={} retrieved", id);
         return Result.success(dto);
     }
 
     @Override
     public Result<Boolean> update(int id, DetailedEventDto dto) {
+        log.info("EventService.update() called with eventId={}, title='{}'", id, dto.getTitle());
 
-        if (dto == null)
+        if (dto == null) {
+            log.warn("EventService.update() failed: Invalid event data (null)");
             return Result.failure(new Error("Invalid event data"));
+        }
 
-        if (dto.getDate().isBefore(LocalDateTime.now()))
+        if (dto.getDate().isBefore(LocalDateTime.now())) {
+            log.warn("EventService.update() failed: Event date must be in the future");
             return Result.failure(new Error("Event date must be in the future"));
+        }
 
         Event existingEvent = repository.findById(id)
                 .orElse(null);
 
-        if (existingEvent == null)
+        if (existingEvent == null) {
+            log.warn("EventService.update() failed: Event not found for id={}", id);
             return Result.failure(new Error("Event not found"));
+        }
 
         User organizer = userRepository.findById(dto.getOrganizerId())
                 .orElse(null);
 
-        if (organizer == null)
+        if (organizer == null) {
+            log.warn("EventService.update() failed: User not found for organizerId={}", dto.getOrganizerId());
             return Result.failure(new Error("User not found"));
+        }
 
         Category category = categoryRepository.findById(dto.getCategoryId())
                 .orElse(null);
 
-        if (category == null)
+        if (category == null) {
+            log.warn("EventService.update() failed: Category not found for categoryId={}", dto.getCategoryId());
             return Result.failure(new Error("Category not found"));
+        }
 
         // ===== mapping =====
         existingEvent.setTitle(dto.getTitle());
@@ -229,9 +263,11 @@ public class EventService implements IEventService {
                             + " at " + existingEvent.getLocation()
             );
 
+            log.info("EventService.update() success: Event id={} updated", id);
             return Result.success(true);
 
         } catch (Exception ex) {
+            log.error("EventService.update() error: Failed to update event id={}", id, ex);
             return Result.failure(new Error("Failed to update event"));
         }
     }

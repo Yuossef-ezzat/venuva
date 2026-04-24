@@ -13,5 +13,13 @@ public class AppConfig {
     RestTemplate restTemplate() {
         return new RestTemplate();
     }
+
+    /**
+     * Register the request logging filter to log all HTTP requests and responses.
+     */
+    @Bean
+    public RequestLoggingFilter requestLoggingFilter() {
+        return new RequestLoggingFilter();
+    }
     
 }

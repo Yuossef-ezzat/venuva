@@ -2,6 +2,7 @@ package com.example.venuva.Infrastructure.PresentaionLayer.Controllers;
 
 import com.example.venuva.Core.Domain.Abstractions.Result;
 import com.example.venuva.Core.ServiceAbstraction.IEventService;
+import com.example.venuva.Infrastructure.Config.ResponseUtility;
 import com.example.venuva.Shared.Dtos.EventDtos.AllEventsDto;
 import com.example.venuva.Shared.Dtos.EventDtos.CreateEventDto;
 import com.example.venuva.Shared.Dtos.EventDtos.DetailedEventDto;
@@ -22,48 +23,39 @@ public class EventController {
     private final IEventService eventService;
 
     @GetMapping
-    public ResponseEntity<Result<List<AllEventsDto>>> getAll() {
-
+    public ResponseEntity<?> getAll() {
         Result<List<AllEventsDto>> result = eventService.getAll();
-
-        return ResponseEntity.ok(result);
+        return ResponseUtility.toResponse(result);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Result<DetailedEventDto>> getById(@PathVariable int id) {
-
+    public ResponseEntity<?> getById(@PathVariable int id) {
         Result<DetailedEventDto> result = eventService.getById(id);
-
-        return ResponseEntity.ok(result);
+        return ResponseUtility.toResponse(result);
     }
 
     @PostMapping
     // @PreAuthorize("hasRole('ORGANIZER') or hasRole('ADMIN')")
-    public ResponseEntity<Result<Integer>> create(@Valid @RequestBody CreateEventDto dto) {
-
+    public ResponseEntity<?> create(@Valid @RequestBody CreateEventDto dto) {
         Result<Integer> result = eventService.add(dto);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(result);
+        return ResponseUtility.toResponse(result, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     // @PreAuthorize("hasRole('ORGANIZER') or hasRole('ADMIN')")
-    public ResponseEntity<Result<Boolean>> update(
+    public ResponseEntity<?> update(
             @PathVariable int id,
             @Valid @RequestBody DetailedEventDto dto) {
 
         Result<Boolean> result = eventService.update(id, dto);
-
-        return ResponseEntity.ok(result);
+        return ResponseUtility.toResponse(result);
     }
 
     // ================= DELETE =================
     @DeleteMapping("/{id}")
     // @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Result<Boolean>> delete(@PathVariable int id) {
-
+    public ResponseEntity<?> delete(@PathVariable int id) {
         Result<Boolean> result = eventService.delete(id);
-
-        return ResponseEntity.ok(result);
+        return ResponseUtility.toResponse(result);
     }
 }

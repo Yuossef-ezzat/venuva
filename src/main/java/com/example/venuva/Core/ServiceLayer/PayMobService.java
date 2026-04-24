@@ -177,11 +177,13 @@ public class PayMobService {
 
     public boolean paymobCallback(PaymobCallbackPayload payload, String hmacHeader) {
         try {
+            log.info("PayMobService.paymobCallback() called - Processing payment notification");
+            
             PaymobObj obj = payload.obj;
 
             if (obj.data != null && obj.data.message != null) {
-                log.warn("PayMob Error Message: {}", obj.data.message);
-                log.warn("TXN Response Code: {}", obj.data.txnResponseCode);
+                log.warn("PayMobService.paymobCallback() - Error Message: {}, TXN Response Code: {}", 
+                        obj.data.message, obj.data.txnResponseCode);
             }
 
             // Build data string for HMAC verification (same order as .NET version)
@@ -221,11 +223,12 @@ public class PayMobService {
             String calculatedHmac = sb.toString();
 
             if (!calculatedHmac.equalsIgnoreCase(hmacHeader)) {
-                log.warn("HMAC verification failed. Expected: {}, Got: {}", calculatedHmac, hmacHeader);
+                log.warn("PayMobService.paymobCallback() - HMAC verification failed for transaction ID: {}", obj.id);
                 return false;
             }
 
-            log.info("HMAC verified successfully. Payment success: {}", obj.success);
+            log.info("PayMobService.paymobCallback() - HMAC verified successfully for transaction ID: {}, success: {}", 
+                    obj.id, obj.success);
 
             // TODO: Save Payment to DB using PaymentRepository
             // Payment payment = new Payment();
@@ -237,7 +240,7 @@ public class PayMobService {
             return Boolean.TRUE.equals(obj.success);
 
         } catch (Exception ex) {
-            log.error("Error processing PayMob callback", ex);
+            log.error("PayMobService.paymobCallback() - Error processing PayMob callback", ex);
             return false;
         }
     }

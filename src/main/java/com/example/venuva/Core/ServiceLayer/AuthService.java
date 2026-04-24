@@ -35,6 +35,7 @@ public class AuthService {
                 String token = jwtService.generateToken(user.getEmail(), user.getRole().name());
 
                 return new AuthResponse(
+                        user.getId(),
                         user.getEmail(),
                         user.getUsername(),
                         token
@@ -53,6 +54,7 @@ public class AuthService {
                 String token = jwtService.generateToken(user.getEmail(), user.getRole().name());
 
                 return new AuthResponse(
+                        user.getId(),
                         user.getEmail(),
                         user.getUsername(),
                         token
@@ -74,6 +76,7 @@ public class AuthService {
                 String token = jwtService.generateToken(user.getEmail(), user.getRole().name());
 
                 return new AuthResponse(
+                        user.getId(),
                         user.getEmail(),
                         user.getUsername(),
                         token
@@ -82,19 +85,20 @@ public class AuthService {
 
         public AuthResponse register(RegisterRequest dto) {
 
-        User user = User.builder()
-                .username(dto.getUsername())
-                .email(dto.getEmail())
-                .password(passwordEncoder.encode(dto.getPassword()))
-                .role(Roles.ATTENDEE)
-                .enabled(true)
-                .build();
-        
-        userRepository.save(user);
+                User user = User.builder()
+                        .username(dto.getUsername())
+                        .email(dto.getEmail())
+                        .password(passwordEncoder.encode(dto.getPassword()))
+                        .role(Roles.ATTENDEE)
+                        .enabled(true)
+                        .build();
+                
+                userRepository.save(user);
 
                 String token = jwtService.generateToken(user.getEmail(), user.getRole().name());
 
                 return new AuthResponse(
+                        user.getId(),
                         user.getEmail(),
                         user.getUsername(),
                         token

@@ -202,58 +202,45 @@ public class EventService implements IEventService {
 
     @Override
     public Result<Boolean> update(int id, DetailedEventDto dto) {
-        log.info("[START] EventService.update() — eventId={}, title='{}'", id, dto.getTitle());
+        log.info("[START] EventService.update() — eventId={}", id);
 
         if (dto == null) {
-            log.warn("[WARN] EventService.update() — Invalid event data (null)");
             return Result.failure(new Error("Invalid event data"));
         }
 
         if (dto.getDate() != null && dto.getDate().isBefore(LocalDateTime.now())) {
-            log.warn("[WARN] EventService.update() — Event date must be in the future");
             return Result.failure(new Error("Event date must be in the future"));
         }
 
-        Event existingEvent = repository.findById(id)
-                .orElse(null);
-
+        Event existingEvent = repository.findById(id).orElse(null);
         if (existingEvent == null) {
-            log.warn("[WARN] EventService.update() — Event not found: {}", id);
             return Result.failure(new Error("Event not found"));
         }
 
-        User organizer = userRepository.findById(dto.getOrganizerId())
-                .orElse(null);
-
-        if (organizer == null) {
-            log.warn("[WARN] EventService.update() — User not found: {}", dto.getOrganizerId());
-            return Result.failure(new Error("User not found"));
+        if (dto.getOrganizerId() != null) {
+            User organizer = userRepository.findById(dto.getOrganizerId()).orElse(null);
+            if (organizer == null) {
+                return Result.failure(new Error("User not found"));
+            }
+            existingEvent.setOrganizer(organizer);
         }
 
-        Category category = categoryRepository.findById(dto.getCategoryId())
-                .orElse(null);
-
-        if (category == null) {
-            log.warn("[WARN] EventService.update() — Category not found: {}", dto.getCategoryId());
-            return Result.failure(new Error("Category not found"));
+        if (dto.getCategoryId() != null) {
+            Category category = categoryRepository.findById(dto.getCategoryId()).orElse(null);
+            if (category == null) {
+                return Result.failure(new Error("Category not found"));
+            }
+            existingEvent.setCategory(category);
         }
 
-        // ===== mapping =====
-        existingEvent.setTitle(dto.getTitle() != null ? dto.getTitle() : existingEvent.getTitle());
-        existingEvent.setDescription(dto.getDescription() != null ? dto.getDescription() : existingEvent.getDescription());
-        existingEvent.setDate(dto.getDate() != null ? dto.getDate() : existingEvent.getDate());
-        existingEvent.setLocation(dto.getLocation() != null ? dto.getLocation() : existingEvent.getLocation());
-
-        existingEvent.setEventStatus(dto.getEventStatus() != null ? dto.getEventStatus() : existingEvent.getEventStatus());
-        existingEvent.setPrice(dto.getPrice() != null ? dto.getPrice() : existingEvent.getPrice());
-
-        existingEvent.setMaxAttendance(
-            dto.getMaxAttendance() != null ? dto.getMaxAttendance() : existingEvent.getMaxAttendance()
-        );
-
-        if (dto.getPaymentRequired() != null) {
-            existingEvent.setPaymentRequired(dto.getPaymentRequired());
-        }
+        if (dto.getTitle() != null)         existingEvent.setTitle(dto.getTitle());
+        if (dto.getDescription() != null)   existingEvent.setDescription(dto.getDescription());
+        if (dto.getDate() != null)          existingEvent.setDate(dto.getDate());
+        if (dto.getLocation() != null)      existingEvent.setLocation(dto.getLocation());
+        if (dto.getEventStatus() != null)   existingEvent.setEventStatus(dto.getEventStatus());
+        if (dto.getMaxAttendance() != null) existingEvent.setMaxAttendance(dto.getMaxAttendance());
+        if (dto.getPaymentRequired() != null) existingEvent.setPaymentRequired(dto.getPaymentRequired());
+        if (dto.getPrice() != null)         existingEvent.setPrice(dto.getPrice());
 
         try {
             repository.save(existingEvent);

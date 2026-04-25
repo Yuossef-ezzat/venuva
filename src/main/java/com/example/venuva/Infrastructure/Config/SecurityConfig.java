@@ -56,10 +56,12 @@ public class SecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/auth/login").permitAll()
+                .requestMatchers("/api/auth/register").permitAll()
                 .requestMatchers("/api/registrations/register").permitAll()
                 .requestMatchers("/api/payments/callback").permitAll()
-                .requestMatchers("/error").permitAll() 
+                .requestMatchers(HttpMethod.POST, "/api/auth/register/organizer").hasRole("ADMIN")
+                .requestMatchers("/error").permitAll()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class); ///

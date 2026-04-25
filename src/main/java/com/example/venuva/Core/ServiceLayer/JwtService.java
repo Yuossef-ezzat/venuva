@@ -29,9 +29,10 @@ public class JwtService {
     }
 
     public String generateToken(String email, String role) {
+        String roleWithPrefix = role.startsWith("ROLE_") ? role : "ROLE_" + role;
         return Jwts.builder()
                 .setSubject(email)
-                .claim("role", role)
+                .claim("role",  roleWithPrefix)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)

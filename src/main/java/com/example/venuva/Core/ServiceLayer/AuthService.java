@@ -44,7 +44,7 @@ public class AuthService {
                 return new AuthResponse(
                         user.getId(),
                         user.getEmail(),
-                        user.getUsername(),
+                        user.getRole().name(),
                         token
                 );
         }
@@ -69,7 +69,7 @@ public class AuthService {
                 return new AuthResponse(
                         user.getId(),
                         user.getEmail(),
-                        user.getUsername(),
+                        user.getRole().name(),
                         token
                 );
         }
@@ -89,7 +89,7 @@ public class AuthService {
                         .email(dto.getEmail())
                         .password(passwordEncoder.encode(dto.getPassword()))
                         .username(dto.getUsername())
-                        .role(Roles.ORGANIZER)
+                        .role(Roles.ROLE_ORGANIZER)
                         .enabled(true)
                         .build();
 
@@ -101,7 +101,7 @@ public class AuthService {
                 return new AuthResponse(
                         user.getId(),
                         user.getEmail(),
-                        user.getUsername(),
+                        user.getRole().name(),
                         token
                 );
         }
@@ -121,7 +121,7 @@ public class AuthService {
                         .username(dto.getUsername())
                         .email(dto.getEmail())
                         .password(passwordEncoder.encode(dto.getPassword()))
-                        .role(Roles.ATTENDEE)
+                        .role(Roles.ROLE_ATTENDEE)
                         .enabled(true)
                         .build();
                 
@@ -133,7 +133,7 @@ public class AuthService {
                 return new AuthResponse(
                         user.getId(),
                         user.getEmail(),
-                        user.getUsername(),
+                        user.getRole().name(),
                         token
                 );
         }

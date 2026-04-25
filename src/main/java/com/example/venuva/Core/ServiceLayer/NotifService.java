@@ -109,7 +109,7 @@ public class NotifService implements INotifService {
 
         notifRepo.save(notif);
 
-        Optional<List<User>> users = userRepo.findAll(u -> u.getRole() == Roles.ATTENDEE);
+        Optional<List<User>> users = userRepo.findAll(u -> u.getRole() == Roles.ROLE_ATTENDEE);
         
         int totalUsersNotified = 0;
         for (User user : users.get()) {

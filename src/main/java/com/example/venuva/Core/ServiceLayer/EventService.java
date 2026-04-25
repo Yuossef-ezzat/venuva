@@ -209,7 +209,7 @@ public class EventService implements IEventService {
             return Result.failure(new Error("Invalid event data"));
         }
 
-        if (dto.getDate().isBefore(LocalDateTime.now())) {
+        if (dto.getDate() != null && dto.getDate().isBefore(LocalDateTime.now())) {
             log.warn("[WARN] EventService.update() — Event date must be in the future");
             return Result.failure(new Error("Event date must be in the future"));
         }

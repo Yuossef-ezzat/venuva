@@ -16,15 +16,15 @@ import java.util.List;
 @Builder
 public class DetailedEventDto {
 
-    private Integer id;
-    private String title;
-    private String description;
-    private LocalDateTime date;
-    private String location;
+    private Integer id = null;
+    private String title = null;
+    private String description = null;
+    private LocalDateTime date = null;
+    private String location = null;
     private Integer maxAttendance = null;
     private EventStatus eventStatus;
-    private Boolean paymentRequired;
-    private BigDecimal price;
+    private Boolean paymentRequired = null;
+    private BigDecimal price = null;
 
 
     // Relations

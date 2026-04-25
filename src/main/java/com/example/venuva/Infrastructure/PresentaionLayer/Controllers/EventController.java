@@ -35,14 +35,14 @@ public class EventController {
     }
 
     @PostMapping
-    // @PreAuthorize("hasRole('ORGANIZER') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ORGANIZER') or hasRole('ADMIN')")
     public ResponseEntity<?> create(@Valid @RequestBody CreateEventDto dto) {
         Result<Integer> result = eventService.add(dto);
         return ResponseUtility.toResponse(result, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    // @PreAuthorize("hasRole('ORGANIZER') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ORGANIZER') or hasRole('ADMIN')")
     public ResponseEntity<?> update(
             @PathVariable int id,
             @Valid @RequestBody DetailedEventDto dto) {
@@ -53,7 +53,7 @@ public class EventController {
 
     // ================= DELETE =================
     @DeleteMapping("/{id}")
-    // @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> delete(@PathVariable int id) {
         Result<Boolean> result = eventService.delete(id);
         return ResponseUtility.toResponse(result);

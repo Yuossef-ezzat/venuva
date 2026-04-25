@@ -30,7 +30,7 @@ public class CreateEventDto {
     private int maxAttendance;
 
     @NotNull(message = "Event status is required")
-    private EventStatus eventStatus;
+    private EventStatus eventStatus = EventStatus.SCHEDULED;
 
     private boolean paymentRequired;
 

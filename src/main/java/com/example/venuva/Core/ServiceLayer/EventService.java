@@ -193,7 +193,7 @@ public class EventService implements IEventService {
         dto.setEventStatus(event.getEventStatus());
         dto.setPaymentRequired(event.isPaymentRequired());
         dto.setMaxAttendance(event.getMaxAttendance());
-        if(dto.isPaymentRequired()) {
+        if(dto.getPaymentRequired() != null && dto.getPaymentRequired()) {
                 dto.setPrice(event.getPrice());
         }
         log.info("[OK] EventService.getById() — Event {} retrieved", id);
@@ -245,8 +245,15 @@ public class EventService implements IEventService {
         existingEvent.setLocation(dto.getLocation() != null ? dto.getLocation() : existingEvent.getLocation());
 
         existingEvent.setEventStatus(dto.getEventStatus() != null ? dto.getEventStatus() : existingEvent.getEventStatus());
-        existingEvent.setMaxAttendance(dto.getMaxAttendance() != 0 ? dto.getMaxAttendance() : existingEvent.getMaxAttendance());
         existingEvent.setPrice(dto.getPrice() != null ? dto.getPrice() : existingEvent.getPrice());
+
+        existingEvent.setMaxAttendance(
+            dto.getMaxAttendance() != null ? dto.getMaxAttendance() : existingEvent.getMaxAttendance()
+        );
+
+        if (dto.getPaymentRequired() != null) {
+            existingEvent.setPaymentRequired(dto.getPaymentRequired());
+        }
 
         try {
             repository.save(existingEvent);

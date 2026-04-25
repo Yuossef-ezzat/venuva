@@ -16,20 +16,20 @@ import java.util.List;
 @Builder
 public class DetailedEventDto {
 
-    private int id;
+    private Integer id;
     private String title;
     private String description;
     private LocalDateTime date;
     private String location;
-    private int maxAttendance = 0;
+    private Integer maxAttendance = null;
     private EventStatus eventStatus;
-    private boolean paymentRequired;
+    private Boolean paymentRequired;
     private BigDecimal price;
 
 
     // Relations
-    private int organizerId = 0;
+    private Integer organizerId = null;
     private String organizerName = null;
-    private int categoryId = 0;
+    private Integer categoryId = null;
     private String categoryName = null;
 }

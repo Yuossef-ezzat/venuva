@@ -37,16 +37,16 @@ public class EventService implements IEventService {
 
     @Override
     public Result<Integer> add(CreateEventDto dto) {
-        log.info("EventService.add() called with title='{}', organizerId={}, categoryId={}", 
+        log.info("[START] EventService.add() — title='{}', organizerId={}, categoryId={}", 
                 dto.getTitle(), dto.getOrganizerId(), dto.getCategoryId());
 
         if (dto.getDate().isBefore(LocalDateTime.now())) {
-            log.warn("EventService.add() failed: Event date must be in the future");
+            log.warn("[WARN] EventService.add() — Event date must be in the future");
             return Result.failure(new Error("Event date must be in the future"));
         }
 
         if (dto.getMaxAttendance() <= 0) {
-            log.warn("EventService.add() failed: MaxAttendance must be greater than 0");
+            log.warn("[WARN] EventService.add() — MaxAttendance must be greater than 0");
             return Result.failure(new Error("MaxAttendance must be greater than 0"));
         }
 
@@ -77,18 +77,18 @@ public class EventService implements IEventService {
                         " at " + event.getLocation()
         );
 
-        log.info("EventService.add() success: Event created with id={}", Entity.getId());
+        log.info("[OK] EventService.add() — Event created with id={}", Entity.getId());
         return Result.success(Entity.getId());
     }
 
     @Override
     public Result<Boolean> delete(Integer id) {
-        log.info("EventService.delete() called with eventId={}", id);
+        log.info("[START] EventService.delete() — eventId={}", id);
 
         Event event = repository.findById(id).orElse(null);
 
         if (event == null) {
-            log.warn("EventService.delete() failed: Event not found for id={}", id);
+            log.warn("[WARN] EventService.delete() — Event not found: {}", id);
             return Result.failure(new Error("Event not found"));
         }
 
@@ -96,7 +96,7 @@ public class EventService implements IEventService {
         boolean deleted = repository.findById(id).isEmpty();
 
         if (!deleted) {
-            log.warn("EventService.delete() failed: Event with id={} could not be deleted", id);
+            log.warn("[WARN] EventService.delete() — Event {} could not be deleted", id);
             return Result.failure(new Error("Failed to delete event"));
         }
 
@@ -108,18 +108,18 @@ public class EventService implements IEventService {
                         " at " + event.getLocation()
         );
 
-        log.info("EventService.delete() success: Event id={} deleted", id);
+        log.info("[OK] EventService.delete() — Event {} deleted", id);
         return Result.success(true);
     }
 
     @Override
     public Result<List<AllEventsDto>> getAll() {
-        log.info("EventService.getAll() called");
+        log.info("[START] EventService.getAll()");
 
         List<Event> events = repository.findAll();
 
         if (events == null || events.isEmpty()) {
-            log.warn("EventService.getAll() failed: No events found");
+            log.warn("[WARN] EventService.getAll() — No events found");
             return Result.failure(new Error("No Events"));
         }
 
@@ -146,18 +146,18 @@ public class EventService implements IEventService {
 
         }).collect(Collectors.toList());
 
-        log.info("EventService.getAll() success: {} events retrieved", dtos.size());
+        log.info("[OK] EventService.getAll() — {} events retrieved", dtos.size());
         return Result.success(dtos);
     }
 
     @Override
     public Result<DetailedEventDto> getById(Integer id) {
-        log.info("EventService.getById() called with eventId={}", id);
+        log.info("[START] EventService.getById() — eventId={}", id);
 
         Event event = repository.findById(id).orElse(null);
 
         if (event == null) {
-            log.warn("EventService.getById() failed: Event not found for id={}", id);
+            log.warn("[WARN] EventService.getById() — Event not found: {}", id);
             return Result.failure(new Error("Event not found"));
         }
 
@@ -195,21 +195,21 @@ public class EventService implements IEventService {
                     .toList()
         );
 
-        log.info("EventService.getById() success: Event id={} retrieved", id);
+        log.info("[OK] EventService.getById() — Event {} retrieved", id);
         return Result.success(dto);
     }
 
     @Override
     public Result<Boolean> update(int id, DetailedEventDto dto) {
-        log.info("EventService.update() called with eventId={}, title='{}'", id, dto.getTitle());
+        log.info("[START] EventService.update() — eventId={}, title='{}'", id, dto.getTitle());
 
         if (dto == null) {
-            log.warn("EventService.update() failed: Invalid event data (null)");
+            log.warn("[WARN] EventService.update() — Invalid event data (null)");
             return Result.failure(new Error("Invalid event data"));
         }
 
         if (dto.getDate().isBefore(LocalDateTime.now())) {
-            log.warn("EventService.update() failed: Event date must be in the future");
+            log.warn("[WARN] EventService.update() — Event date must be in the future");
             return Result.failure(new Error("Event date must be in the future"));
         }
 
@@ -217,7 +217,7 @@ public class EventService implements IEventService {
                 .orElse(null);
 
         if (existingEvent == null) {
-            log.warn("EventService.update() failed: Event not found for id={}", id);
+            log.warn("[WARN] EventService.update() — Event not found: {}", id);
             return Result.failure(new Error("Event not found"));
         }
 
@@ -225,7 +225,7 @@ public class EventService implements IEventService {
                 .orElse(null);
 
         if (organizer == null) {
-            log.warn("EventService.update() failed: User not found for organizerId={}", dto.getOrganizerId());
+            log.warn("[WARN] EventService.update() — User not found: {}", dto.getOrganizerId());
             return Result.failure(new Error("User not found"));
         }
 
@@ -233,7 +233,7 @@ public class EventService implements IEventService {
                 .orElse(null);
 
         if (category == null) {
-            log.warn("EventService.update() failed: Category not found for categoryId={}", dto.getCategoryId());
+            log.warn("[WARN] EventService.update() — Category not found: {}", dto.getCategoryId());
             return Result.failure(new Error("Category not found"));
         }
 
@@ -263,11 +263,11 @@ public class EventService implements IEventService {
                             + " at " + existingEvent.getLocation()
             );
 
-            log.info("EventService.update() success: Event id={} updated", id);
+            log.info("[OK] EventService.update() — Event {} updated", id);
             return Result.success(true);
 
         } catch (Exception ex) {
-            log.error("EventService.update() error: Failed to update event id={}", id, ex);
+            log.error("[ERROR] EventService.update() — Failed to update event {}", id, ex);
             return Result.failure(new Error("Failed to update event"));
         }
     }

@@ -7,12 +7,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.example.venuva.Core.Domain.Exceptions.DataConflictException;
 import com.example.venuva.Core.Domain.Models.UserDetails.Roles;
 import com.example.venuva.Core.Domain.Models.UserDetails.User;
 import com.example.venuva.Infrastructure.PresistenceLayer.Repos.UserRepository;
 import com.example.venuva.Shared.Dtos.AuthDtos.AuthResponse;
 import com.example.venuva.Shared.Dtos.AuthDtos.LoginRequest;
 import com.example.venuva.Shared.Dtos.AuthDtos.RegisterRequest;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -30,14 +33,14 @@ public class AuthService {
 
     // ===== Get Current User =====
         public AuthResponse getCurrentUser(String email) {
-                log.info("AuthService.getCurrentUser() called with email={}", email);
+                log.info("[START] AuthService.getCurrentUser() — email={}", email);
 
                 User user = userRepository.findByEmail(email)
                         .orElseThrow(() -> new RuntimeException("Email not found"));
 
                 String token = jwtService.generateToken(user.getEmail(), user.getRole().name());
 
-                log.info("AuthService.getCurrentUser() success: Retrieved user {}", email);
+                log.info("[OK] AuthService.getCurrentUser() — Retrieved user {}", email);
                 return new AuthResponse(
                         user.getId(),
                         user.getEmail(),
@@ -47,22 +50,22 @@ public class AuthService {
         }
 
         public AuthResponse login(LoginRequest loginDto) {
-                log.info("AuthService.login() called with email={}", loginDto.getEmail());
+                log.info("[START] AuthService.login() — email={}", loginDto.getEmail());
 
                 User user = userRepository.findByEmail(loginDto.getEmail())
                         .orElseThrow(() -> {
-                                log.warn("AuthService.login() failed: Email not found for {}", loginDto.getEmail());
+                                log.warn("[WARN] AuthService.login() — Email not found: {}", loginDto.getEmail());
                                 return new RuntimeException("Email not found");
                         });
 
                 if (!passwordEncoder.matches(loginDto.getPassword(), user.getPassword())) {
-                        log.warn("AuthService.login() failed: Wrong password for email={}", loginDto.getEmail());
+                        log.warn("[WARN] AuthService.login() — Wrong password for email={}", loginDto.getEmail());
                         throw new RuntimeException("Unauthorized");
                 }
 
                 String token = jwtService.generateToken(user.getEmail(), user.getRole().name());
 
-                log.info("AuthService.login() success: User {} logged in successfully", loginDto.getEmail());
+                log.info("[OK] AuthService.login() — User {} logged in successfully", loginDto.getEmail());
                 return new AuthResponse(
                         user.getId(),
                         user.getEmail(),
@@ -72,8 +75,15 @@ public class AuthService {
         }
 
         public AuthResponse registerOrganizer(RegisterRequest dto) {
-                log.info("AuthService.registerOrganizer() called with username='{}', email={}, role=ORGANIZER", 
+                log.info("[START] AuthService.registerOrganizer() — username='{}', email={}, role=ORGANIZER", 
                         dto.getUsername(), dto.getEmail());
+
+                // Check for duplicate email BEFORE saving
+                Optional<User> existingUser = userRepository.findByEmail(dto.getEmail());
+                if (existingUser.isPresent()) {
+                        log.warn("[WARN] AuthService.registerOrganizer() — Email already in use: {}", dto.getEmail());
+                        throw new DataConflictException("This email address is already registered. Please use a different email.");
+                }
 
                 User user = User.builder()
                         .email(dto.getEmail())
@@ -87,7 +97,7 @@ public class AuthService {
 
                 String token = jwtService.generateToken(user.getEmail(), user.getRole().name());
 
-                log.info("AuthService.registerOrganizer() success: Organizer {} registered", dto.getEmail());
+                log.info("[OK] AuthService.registerOrganizer() — Organizer {} registered with role=ORGANIZER", dto.getEmail());
                 return new AuthResponse(
                         user.getId(),
                         user.getEmail(),
@@ -97,8 +107,15 @@ public class AuthService {
         }
 
         public AuthResponse register(RegisterRequest dto) {
-                log.info("AuthService.register() called with username='{}', email={}, role=ATTENDEE", 
+                log.info("[START] AuthService.register() — username='{}', email={}, role=ATTENDEE", 
                         dto.getUsername(), dto.getEmail());
+
+                // Check for duplicate email BEFORE saving
+                Optional<User> existingUser = userRepository.findByEmail(dto.getEmail());
+                if (existingUser.isPresent()) {
+                        log.warn("[WARN] AuthService.register() — Email already in use: {}", dto.getEmail());
+                        throw new DataConflictException("This email address is already registered. Please use a different email.");
+                }
 
                 User user = User.builder()
                         .username(dto.getUsername())
@@ -112,7 +129,7 @@ public class AuthService {
 
                 String token = jwtService.generateToken(user.getEmail(), user.getRole().name());
 
-                log.info("AuthService.register() success: User {} registered", dto.getEmail());
+                log.info("[OK] AuthService.register() — User {} registered with role=ATTENDEE", dto.getEmail());
                 return new AuthResponse(
                         user.getId(),
                         user.getEmail(),

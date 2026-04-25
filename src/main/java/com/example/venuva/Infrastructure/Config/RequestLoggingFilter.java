@@ -13,6 +13,8 @@ import java.io.IOException;
  * HTTP request/response logging filter.
  * Logs HTTP method, URI, and response status code for every request.
  * Runs once per request to provide unified logging across the application.
+ * 
+ * Excludes: /error, /favicon.ico
  */
 @Slf4j
 public class RequestLoggingFilter extends OncePerRequestFilter {
@@ -22,9 +24,16 @@ public class RequestLoggingFilter extends OncePerRequestFilter {
                                     HttpServletResponse response, 
                                     FilterChain filterChain) throws ServletException, IOException {
         
+        String uri = request.getRequestURI();
+        
+        // Skip logging for excluded paths
+        if (uri.equals("/error") || uri.equals("/favicon.ico")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+        
         long startTime = System.currentTimeMillis();
         String method = request.getMethod();
-        String uri = request.getRequestURI();
         
         try {
             // Process the request

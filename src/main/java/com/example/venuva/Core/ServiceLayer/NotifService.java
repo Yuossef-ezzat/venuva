@@ -67,12 +67,12 @@ public class NotifService implements INotifService {
 
     @Override
     public Result<NotifDTO> markNotifAsRead(int notifId) {
-        log.info("NotifService.markNotifAsRead() called with notifId={}", notifId);
+        log.info("[START] NotifService.markNotifAsRead() — notifId={}", notifId);
         
         Optional<UserNotification> notifOptional = userNotifRepoGeneric.findById(notifId);
         
         if (!notifOptional.isPresent()) {
-            log.warn("NotifService.markNotifAsRead() failed: Notification not found for id={}", notifId);
+            log.warn("[WARN] NotifService.markNotifAsRead() — Notification not found: {}", notifId);
             return Result.failure(new Error("Notif.NotFound", "Notification not found"));
         }
         
@@ -81,14 +81,14 @@ public class NotifService implements INotifService {
         Notification n = notifRepo.findById(notif.getNotifId()).orElse(null);
 
         if (n == null) {
-            log.warn("NotifService.markNotifAsRead() failed: Notification not found for id={}", notifId);
+            log.warn("[WARN] NotifService.markNotifAsRead() — Notification not found: {}", notifId);
             return Result.failure(new Error("Notif.NotFound", "Notification not found"));
         }
 
         notif.setRead(true);
         userNotifRepoGeneric.save(notif);
 
-        log.info("NotifService.markNotifAsRead() success: Notification id={} marked as read", notifId);
+        log.info("[OK] NotifService.markNotifAsRead() — Notification {} marked as read", notifId);
         return Result.success(new NotifDTO(
                                 n.getNotifId(),
                                 n.getMessage(),
@@ -101,17 +101,17 @@ public class NotifService implements INotifService {
 
     @Override
     public Result<Object> sendNotification(String message) {
-        log.info("NotifService.sendNotification() called with message='{}'", message);
+        log.info("[START] NotifService.sendNotification() — Broadcasting message");
 
         Notification notif = new Notification();
         notif.setMessage(message);
         notif.setDate(LocalDateTime.now());
 
         notifRepo.save(notif);
-        log.info("NotifService.sendNotification() saved notification with id={}", notif.getNotifId());
 
         Optional<List<User>> users = userRepo.findAll(u -> u.getRole() == Roles.ATTENDEE);
-
+        
+        int totalUsersNotified = 0;
         for (User user : users.get()) {
 
             UserNotification userNotif = new UserNotification();
@@ -120,8 +120,8 @@ public class NotifService implements INotifService {
             userNotif.setRead(false);
 
             userNotifRepoGeneric.save(userNotif);
+            totalUsersNotified++;
 
-            log.info("NotifService.sendNotification() sending email to user {}", user.getEmail());
             emailService.sendEmail(
                     user.getEmail(),
                     "New Notification",
@@ -129,20 +129,20 @@ public class NotifService implements INotifService {
             );
         }
 
+        log.info("[OK] NotifService.sendNotification() — Notification sent to {} users", totalUsersNotified);
         return Result.success(null);
     }
 
     @Override
     public Result<Object> sendNotificationForRegisterdUserAtEvent(List<Registration> registrations, String message) {
-        log.info("NotifService.sendNotificationForRegisterdUserAtEvent() called with message='{}', {} registrations", 
-                message, registrations.size());
+        log.info("[START] NotifService.sendNotificationForRegisterdUserAtEvent() — {} registrations", 
+                registrations.size());
 
         Notification notif = new Notification();
         notif.setMessage(message);
         notif.setDate(LocalDateTime.now());
 
         notifRepo.save(notif);
-        log.info("NotifService.sendNotificationForRegisterdUserAtEvent() saved notification with id={}", notif.getNotifId());
 
         for (Registration reg : registrations) {
 
@@ -153,8 +153,6 @@ public class NotifService implements INotifService {
 
             userNotifRepoGeneric.save(userNotif);
 
-            log.info("NotifService.sendNotificationForRegisterdUserAtEvent() sending email to user {}", 
-                    reg.getUser().getEmail());
             emailService.sendEmail(
                     reg.getUser().getEmail(),
                     "New Notification",
@@ -162,6 +160,8 @@ public class NotifService implements INotifService {
             );
         }
 
+        log.info("[OK] NotifService.sendNotificationForRegisterdUserAtEvent() — Notification sent to {} users", 
+                registrations.size());
         return Result.success(null);
     }
 }

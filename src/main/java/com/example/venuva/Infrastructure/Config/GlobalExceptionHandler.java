@@ -1,5 +1,6 @@
 package com.example.venuva.Infrastructure.Config;
 
+import com.example.venuva.Core.Domain.Exceptions.DataConflictException;
 import com.example.venuva.Shared.Dtos.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.persistence.EntityNotFoundException;
@@ -7,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -19,6 +21,11 @@ import java.util.stream.Collectors;
  * Global Exception Handler for all REST controllers.
  * Converts exceptions to clean error responses without exposing internal details.
  * Logs full details internally for debugging.
+ * 
+ * Rules:
+ * - NEVER expose: class names, SQL errors, stack traces, Spring internals, field names
+ * - ALWAYS give actionable, user-friendly messages
+ * - Log full exception internally: log.error("[{}] {} {} — {}", code, method, uri, ex.getMessage(), ex)
  */
 @RestControllerAdvice
 @Slf4j
@@ -32,12 +39,14 @@ public class GlobalExceptionHandler {
             IllegalArgumentException ex,
             HttpServletRequest request) {
         
-        log.error("[REQUEST] {} {} - IllegalArgumentException: {}", 
-                request.getMethod(), request.getRequestURI(), ex.getMessage(), ex);
+        String code = "BAD_REQUEST";
+        String method = request.getMethod();
+        String uri = request.getRequestURI();
+        log.error("[{}] {} {} — {}", code, method, uri, ex.getMessage(), ex);
         
         ErrorResponse error = new ErrorResponse(
-                "Invalid input provided",
-                "INVALID_ARGUMENT"
+                "The data you provided is not valid. Please check your input.",
+                code
         );
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
@@ -56,12 +65,14 @@ public class GlobalExceptionHandler {
                 .map(error -> error.getField() + ": " + error.getDefaultMessage())
                 .collect(Collectors.joining(", "));
         
-        log.error("[REQUEST] {} {} - Validation Error: {}", 
-                request.getMethod(), request.getRequestURI(), errors, ex);
+        String code = "VALIDATION_ERROR";
+        String method = request.getMethod();
+        String uri = request.getRequestURI();
+        log.error("[{}] {} {} — Validation Error: {}", code, method, uri, errors, ex);
         
         ErrorResponse error = new ErrorResponse(
                 "Validation failed: " + errors,
-                "VALIDATION_ERROR"
+                code
         );
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
@@ -77,18 +88,40 @@ public class GlobalExceptionHandler {
             RuntimeException ex,
             HttpServletRequest request) {
         
-        log.error("[REQUEST] {} {} - Not Found: {}", 
-                request.getMethod(), request.getRequestURI(), ex.getMessage(), ex);
+        String code = "NOT_FOUND";
+        String method = request.getMethod();
+        String uri = request.getRequestURI();
+        log.error("[{}] {} {} — {}", code, method, uri, ex.getMessage(), ex);
         
         ErrorResponse error = new ErrorResponse(
-                "The requested resource was not found",
-                "NOT_FOUND"
+                "The requested item was not found.",
+                code
         );
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
     /**
-     * Handle DataIntegrityViolationException (e.g., duplicate email, foreign key violations) → 409 Conflict
+     * Handle DataConflictException (duplicate email, etc.) → 409 Conflict
+     */
+    @ExceptionHandler(DataConflictException.class)
+    public ResponseEntity<ErrorResponse> handleDataConflictException(
+            DataConflictException ex,
+            HttpServletRequest request) {
+        
+        String code = "CONFLICT";
+        String method = request.getMethod();
+        String uri = request.getRequestURI();
+        log.error("[{}] {} {} — {}", code, method, uri, ex.getMessage(), ex);
+        
+        ErrorResponse error = new ErrorResponse(
+                ex.getMessage(),
+                code
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
+
+    /**
+     * Handle DataIntegrityViolationException (duplicate keys, foreign key violations) → 409 Conflict
      */
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorResponse> handleDataIntegrityViolation(
@@ -96,20 +129,36 @@ public class GlobalExceptionHandler {
             HttpServletRequest request) {
         
         String cause = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
-        log.error("[REQUEST] {} {} - DataIntegrityViolation: {}", 
-                request.getMethod(), request.getRequestURI(), cause, ex);
-        
-        // Determine if it's a duplicate key or other constraint violation
-        String userMessage = "The operation could not be completed due to a data constraint violation";
         String code = "CONFLICT";
+        String method = request.getMethod();
+        String uri = request.getRequestURI();
+        log.error("[{}] {} {} — DataIntegrityViolation: {}", code, method, uri, cause, ex);
         
-        if (cause != null && cause.toLowerCase().contains("duplicate")) {
-            userMessage = "A record with this value already exists";
-            code = "DUPLICATE_ENTRY";
-        }
-        
-        ErrorResponse error = new ErrorResponse(userMessage, code);
+        ErrorResponse error = new ErrorResponse(
+                "This record already exists. Please check for duplicates.",
+                code
+        );
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
+
+    /**
+     * Handle AccessDeniedException (authorization failures) → 403 Forbidden
+     */
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDeniedException(
+            AccessDeniedException ex,
+            HttpServletRequest request) {
+        
+        String code = "FORBIDDEN";
+        String method = request.getMethod();
+        String uri = request.getRequestURI();
+        log.error("[{}] {} {} — {}", code, method, uri, ex.getMessage(), ex);
+        
+        ErrorResponse error = new ErrorResponse(
+                "You do not have permission to perform this action.",
+                code
+        );
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
     }
 
     /**
@@ -120,12 +169,14 @@ public class GlobalExceptionHandler {
             RuntimeException ex,
             HttpServletRequest request) {
         
-        log.error("[REQUEST] {} {} - RuntimeException: {}", 
-                request.getMethod(), request.getRequestURI(), ex.getMessage(), ex);
+        String code = "BAD_REQUEST";
+        String method = request.getMethod();
+        String uri = request.getRequestURI();
+        log.error("[{}] {} {} — {}", code, method, uri, ex.getMessage(), ex);
         
         ErrorResponse error = new ErrorResponse(
-                "An operation failed. Please try again",
-                "OPERATION_FAILED"
+                "Something went wrong. Please try again.",
+                code
         );
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
@@ -138,12 +189,14 @@ public class GlobalExceptionHandler {
             Exception ex,
             HttpServletRequest request) {
         
-        log.error("[REQUEST] {} {} - Unhandled Exception: {}", 
-                request.getMethod(), request.getRequestURI(), ex.getMessage(), ex);
+        String code = "INTERNAL_SERVER_ERROR";
+        String method = request.getMethod();
+        String uri = request.getRequestURI();
+        log.error("[{}] {} {} — {}", code, method, uri, ex.getMessage(), ex);
         
         ErrorResponse error = new ErrorResponse(
-                "An unexpected error occurred. Please contact support if the problem persists",
-                "INTERNAL_SERVER_ERROR"
+                "An unexpected error occurred. Please contact support.",
+                code
         );
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }

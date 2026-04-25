@@ -48,7 +48,7 @@ public class PayMobService {
     // ===== STEP 1: AUTHENTICATE → GET TOKEN =====
 
     public String authenticate() {
-        log.info("Starting PayMob authentication...");
+        log.info("[START] PayMobService.authenticate() — Authenticating with PayMob");
 
         Map<String, String> body = new HashMap<>();
         body.put("api_key", apiKey);
@@ -60,18 +60,18 @@ public class PayMobService {
         );
 
         if (response.getBody() == null || response.getBody().token == null) {
-            log.error("PayMob returned null or empty token");
+            log.error("[ERROR] PayMobService.authenticate() — PayMob returned null or empty token");
             throw new RuntimeException("PayMob authentication failed: empty token");
         }
 
-        log.info("PayMob authentication successful. Token length: {}", response.getBody().token.length());
+        log.info("[OK] PayMobService.authenticate() — Authentication successful");
         return response.getBody().token;
     }
 
     // ===== STEP 2: CREATE ORDER =====
 
     public int createOrder(String token, int amountCents) {
-        log.info("Creating PayMob order for amount: {} cents", amountCents);
+        log.info("[START] PayMobService.createOrder() — amount: {} cents", amountCents);
 
         Map<String, Object> body = new HashMap<>();
         body.put("auth_token", token);
@@ -87,18 +87,18 @@ public class PayMobService {
         );
 
         if (response.getBody() == null || response.getBody().id == 0) {
-            log.error("PayMob returned invalid order ID");
+            log.error("[ERROR] PayMobService.createOrder() — PayMob returned invalid order ID");
             throw new RuntimeException("PayMob order creation failed: invalid order ID");
         }
 
-        log.info("Order created successfully. Order ID: {}", response.getBody().id);
+        log.info("[OK] PayMobService.createOrder() — Order created: {}", response.getBody().id);
         return response.getBody().id;
     }
 
     // ===== STEP 3: GET PAYMENT KEY =====
 
     public String getPaymentKey(String token, int orderId, int amountCents, int userId) {
-        log.info("Getting payment key for order: {}, amount: {}", orderId, amountCents);
+        log.info("[START] PayMobService.getPaymentKey() — orderId: {}, amount: {} cents", orderId, amountCents);
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
@@ -134,11 +134,11 @@ public class PayMobService {
         );
 
         if (response.getBody() == null || response.getBody().token == null) {
-            log.error("PayMob returned invalid payment key");
+            log.error("[ERROR] PayMobService.getPaymentKey() — PayMob returned invalid payment key");
             throw new RuntimeException("PayMob payment key generation failed");
         }
 
-        log.info("Payment key generated successfully. Key length: {}", response.getBody().token.length());
+        log.info("[OK] PayMobService.getPaymentKey() — Payment key generated");
         return response.getBody().token;
     }
 
@@ -156,20 +156,14 @@ public class PayMobService {
     // ===== FULL PAYMENT FLOW =====
 
     public String payWithCard(int amountCents, int userId) {
-        log.info("=== Starting payment process for {} cents ===", amountCents);
+        log.info("[START] PayMobService.payWithCard() — amount: {} cents, userId: {}", amountCents, userId);
 
         String token = authenticate();
-        log.info("Step 1/3: Authentication completed");
-
         int orderId = createOrder(token, amountCents);
-        log.info("Step 2/3: Order created with ID: {}", orderId);
-
         String paymentKey = getPaymentKey(token, orderId, amountCents, userId);
-        log.info("Step 3/3: Payment key generated");
-
         String iframeUrl = getIframeUrl(paymentKey);
-        log.info("=== Payment process completed. IFrame URL: {} ===", iframeUrl);
 
+        log.info("[OK] PayMobService.payWithCard() — Payment flow completed");
         return iframeUrl;
     }
 
@@ -177,12 +171,12 @@ public class PayMobService {
 
     public boolean paymobCallback(PaymobCallbackPayload payload, String hmacHeader) {
         try {
-            log.info("PayMobService.paymobCallback() called - Processing payment notification");
+            log.info("[START] PayMobService.paymobCallback() — Processing payment notification");
             
             PaymobObj obj = payload.obj;
 
             if (obj.data != null && obj.data.message != null) {
-                log.warn("PayMobService.paymobCallback() - Error Message: {}, TXN Response Code: {}", 
+                log.warn("[WARN] PayMobService.paymobCallback() — Error Message: {}, TXN Response Code: {}", 
                         obj.data.message, obj.data.txnResponseCode);
             }
 
@@ -223,11 +217,11 @@ public class PayMobService {
             String calculatedHmac = sb.toString();
 
             if (!calculatedHmac.equalsIgnoreCase(hmacHeader)) {
-                log.warn("PayMobService.paymobCallback() - HMAC verification failed for transaction ID: {}", obj.id);
+                log.warn("[WARN] PayMobService.paymobCallback() — HMAC verification failed for transaction: {}", obj.id);
                 return false;
             }
 
-            log.info("PayMobService.paymobCallback() - HMAC verified successfully for transaction ID: {}, success: {}", 
+            log.info("[OK] PayMobService.paymobCallback() — HMAC verified for transaction: {}, success: {}", 
                     obj.id, obj.success);
 
             // TODO: Save Payment to DB using PaymentRepository
@@ -240,7 +234,7 @@ public class PayMobService {
             return Boolean.TRUE.equals(obj.success);
 
         } catch (Exception ex) {
-            log.error("PayMobService.paymobCallback() - Error processing PayMob callback", ex);
+            log.error("[ERROR] PayMobService.paymobCallback() — {}", ex.getMessage(), ex);
             return false;
         }
     }

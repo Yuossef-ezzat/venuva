@@ -37,11 +37,11 @@ public class RegistrationService implements IRegistrationService {
 
     @Override
     public Result<RegistrationDto> registerUserToEvent(RegistrationRequestDto requestDto) {
-        log.info("RegistrationService.registerUserToEvent() called with userId={}, eventId={}", 
+        log.info("[START] RegistrationService.registerUserToEvent() — userId={}, eventId={}", 
                 requestDto.getUserId(), requestDto.getEventId());
 
         if (isUserAlreadyRegistered(requestDto.getUserId(), requestDto.getEventId())) {
-            log.warn("RegistrationService.registerUserToEvent() failed: User {} already registered for event {}", 
+            log.warn("[WARN] RegistrationService.registerUserToEvent() — User {} already registered for event {}", 
                     requestDto.getUserId(), requestDto.getEventId());
             return Result.failure(
                     new Error("User already registered for this event")
@@ -51,7 +51,7 @@ public class RegistrationService implements IRegistrationService {
                 .orElse(null);
 
         if (event == null) {
-            log.warn("RegistrationService.registerUserToEvent() failed: Event not found with id={}", 
+            log.warn("[WARN] RegistrationService.registerUserToEvent() — Event not found: {}", 
                     requestDto.getEventId());
             return Result.failure(
                     new Error("Event not found")
@@ -61,7 +61,7 @@ public class RegistrationService implements IRegistrationService {
                 .orElse(null);
 
         if (user == null) {
-            log.warn("RegistrationService.registerUserToEvent() failed: User not found with id={}", 
+            log.warn("[WARN] RegistrationService.registerUserToEvent() — User not found: {}", 
                     requestDto.getUserId());
             return Result.failure(
                     new Error("User not found")
@@ -89,7 +89,7 @@ public class RegistrationService implements IRegistrationService {
         dto.setPaymentRequired(event.isPaymentRequired());
         dto.setStatus(registration.getRegistrationStatus().toString());
 
-        log.info("RegistrationService.registerUserToEvent() success: User {} registered to event {}", 
+        log.info("[OK] RegistrationService.registerUserToEvent() — User {} registered to event {}", 
                 requestDto.getUserId(), requestDto.getEventId());
         return Result.success(dto);
     }
@@ -97,24 +97,24 @@ public class RegistrationService implements IRegistrationService {
 
     @Override
     public Result<Boolean> cancelRegistration(CancleRegisrationDto dto) {
-        log.info("RegistrationService.cancelRegistration() called with userId={}, eventId={}", 
+        log.info("[START] RegistrationService.cancelRegistration() — userId={}, eventId={}", 
                 dto.getUserId(), dto.getEventId());
 
         if (dto == null) {
-            log.warn("RegistrationService.cancelRegistration() failed: Request body is missing");
+            log.warn("[WARN] RegistrationService.cancelRegistration() — Request body is missing");
             return Result.failure(new Error("Request body is missing"));
         }
         Registration registration = repository.findByEventIdAndUserId(dto.getEventId(), dto.getUserId());
 
         if (registration == null) {
-            log.warn("RegistrationService.cancelRegistration() failed: User {} not registered for event {}", 
+            log.warn("[WARN] RegistrationService.cancelRegistration() — User {} not registered for event {}", 
                     dto.getUserId(), dto.getEventId());
             return Result.failure(
                     new Error("User is not registered for this event")
             );
         }
         repository.delete(registration);
-        log.info("RegistrationService.cancelRegistration() success: User {} unregistered from event {}", 
+        log.info("[OK] RegistrationService.cancelRegistration() — User {} unregistered from event {}", 
                 dto.getUserId(), dto.getEventId());
         return Result.success(true);
     }
@@ -124,12 +124,12 @@ public class RegistrationService implements IRegistrationService {
     // =======================
     @Override
     public Result<List<RegistrationDto>> getUserRegistrations(int userId) {
-        log.info("RegistrationService.getUserRegistrations() called with userId={}", userId);
+        log.info("[START] RegistrationService.getUserRegistrations() — userId={}", userId);
 
         List<Registration> registrations = repository.findByUserId(userId);
 
         if (registrations == null || registrations.isEmpty()) {
-            log.warn("RegistrationService.getUserRegistrations() failed: No registrations found for userId={}", userId);
+            log.warn("[WARN] RegistrationService.getUserRegistrations() — No registrations found for userId={}", userId);
             return Result.failure(
                     new Error("No registrations found")
             );
@@ -157,7 +157,7 @@ public class RegistrationService implements IRegistrationService {
 
         }).collect(Collectors.toList());
 
-        log.info("RegistrationService.getUserRegistrations() success: {} registrations retrieved for userId={}", 
+        log.info("[OK] RegistrationService.getUserRegistrations() — {} registrations retrieved for userId={}", 
                 result.size(), userId);
         return Result.success(result);
     }

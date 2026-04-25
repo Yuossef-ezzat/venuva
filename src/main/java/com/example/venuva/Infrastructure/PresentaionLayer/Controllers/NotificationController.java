@@ -15,7 +15,7 @@ import java.util.List;
 @RequestMapping("/api/notifications")
 @RequiredArgsConstructor
 @PreAuthorize("isAuthenticated()")
-public class NotificationController {
+public class NotificationController {   
 
     private final INotifService notifService;
 

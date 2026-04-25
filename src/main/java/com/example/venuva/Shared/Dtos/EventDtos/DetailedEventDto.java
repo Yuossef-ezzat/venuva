@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -20,17 +21,15 @@ public class DetailedEventDto {
     private String description;
     private LocalDateTime date;
     private String location;
-    private int maxAttendance;
+    private int maxAttendance = 0;
     private EventStatus eventStatus;
     private boolean paymentRequired;
+    private BigDecimal price;
+
 
     // Relations
-    private int organizerId;
-    private String organizerName;
-    private int categoryId;
-    private String categoryName;
-
-    private List<String> registrations;
-    private List<String> payments;
-    private List<String> notifications;
+    private int organizerId = 0;
+    private String organizerName = null;
+    private int categoryId = 0;
+    private String categoryName = null;
 }

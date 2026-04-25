@@ -24,10 +24,11 @@ public class PaymobController {
     @PreAuthorize("hasRole('USER') or hasRole('ORGANIZER') or hasRole('ADMIN')")
     public ResponseEntity<?> pay(
             @RequestParam int amountCents,
-            @RequestParam int userId) {
+            @RequestParam int userId,
+            @RequestParam int eventId) {
         try {
             log.info("PaymobController.pay() called with userId={}, amountCents={}", userId, amountCents);
-            String iframeUrl = payMobService.payWithCard(amountCents, userId);
+            String iframeUrl = payMobService.payWithCard(amountCents, userId, eventId);
             log.info("PaymobController.pay() success: Payment URL generated for userId={}", userId);
             return ResponseEntity.ok(iframeUrl);
         } catch (Exception ex) {

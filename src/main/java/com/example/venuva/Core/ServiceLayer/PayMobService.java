@@ -1,7 +1,11 @@
 package com.example.venuva.Core.ServiceLayer;
 
+import com.example.venuva.Core.Domain.Models.PaymentModule.Payment;
 import com.example.venuva.Core.Domain.Models.UserDetails.User;
+import com.example.venuva.Infrastructure.PresistenceLayer.Repos.PaymentRepo;
 import com.example.venuva.Infrastructure.PresistenceLayer.Repos.UserRepository;
+import com.example.venuva.Shared.Dtos.RegisterationDto.RegistrationRequestDto;
+import com.example.venuva.Shared.Enums.PaymentStatus;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
@@ -14,7 +18,10 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,6 +32,8 @@ public class PayMobService {
 
     private final RestTemplate restTemplate;
     private final UserRepository userRepository;
+    private final RegistrationService registrationService;
+    private final PaymentRepo paymentRepository;
 
     private static final String BASE_URL = "https://accept.paymob.com/api/";
 
@@ -97,7 +106,7 @@ public class PayMobService {
 
     // ===== STEP 3: GET PAYMENT KEY =====
 
-    public String getPaymentKey(String token, int orderId, int amountCents, int userId) {
+    public String getPaymentKey(String token, int orderId, int amountCents, int userId, int eventId) {
         log.info("[START] PayMobService.getPaymentKey() — orderId: {}, amount: {} cents", orderId, amountCents);
 
         User user = userRepository.findById(userId)
@@ -106,7 +115,7 @@ public class PayMobService {
         Map<String, Object> billingData = new HashMap<>();
         billingData.put("apartment", String.valueOf(userId));
         billingData.put("email", user.getEmail());
-        billingData.put("floor", "NA");
+        billingData.put("floor", String.valueOf(eventId));
         billingData.put("first_name", user.getUsername());
         billingData.put("street", "NA");
         billingData.put("building", "NA");
@@ -155,12 +164,12 @@ public class PayMobService {
 
     // ===== FULL PAYMENT FLOW =====
 
-    public String payWithCard(int amountCents, int userId) {
+    public String payWithCard(int amountCents, int userId, int eventId) {
         log.info("[START] PayMobService.payWithCard() — amount: {} cents, userId: {}", amountCents, userId);
 
         String token = authenticate();
         int orderId = createOrder(token, amountCents);
-        String paymentKey = getPaymentKey(token, orderId, amountCents, userId);
+        String paymentKey = getPaymentKey(token, orderId, amountCents, userId, eventId);
         String iframeUrl = getIframeUrl(paymentKey);
 
         log.info("[OK] PayMobService.payWithCard() — Payment flow completed");
@@ -180,7 +189,6 @@ public class PayMobService {
                         obj.data.message, obj.data.txnResponseCode);
             }
 
-            // Build data string for HMAC verification (same order as .NET version)
             String dataString = obj.amountCents
                     + obj.createdAt
                     + obj.currency
@@ -224,12 +232,17 @@ public class PayMobService {
             log.info("[OK] PayMobService.paymobCallback() — HMAC verified for transaction: {}, success: {}", 
                     obj.id, obj.success);
 
-            // TODO: Save Payment to DB using PaymentRepository
-            // Payment payment = new Payment();
-            // payment.setAmount(BigDecimal.valueOf(obj.amountCents).divide(BigDecimal.valueOf(100)));
-            // payment.setPaymentStatus(obj.success ? PaymentStatus.SUCCESS : PaymentStatus.FAILED);
-            // payment.setTransactionDate(LocalDateTime.now());
-            // paymentRepository.save(payment);
+            paymentRepository.save(new Payment() {{
+                setAmount(BigDecimal.valueOf(obj.amountCents).divide(BigDecimal.valueOf(100)));
+                setPaymentStatus(PaymentStatus.SUCCESS);
+                setTransactionDate(LocalDateTime.now());
+            }});
+
+
+            registrationService.registerUserToEvent(new RegistrationRequestDto() {{
+                setUserId(obj.owner);
+                setEventId(obj.order.id);
+            }});
 
             return Boolean.TRUE.equals(obj.success);
 

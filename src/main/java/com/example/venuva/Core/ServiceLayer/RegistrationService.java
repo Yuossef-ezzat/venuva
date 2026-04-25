@@ -16,7 +16,6 @@ import com.example.venuva.Shared.Enums.RegistrationStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,7 +27,6 @@ public class RegistrationService implements IRegistrationService {
     private final RegistrationRepository repository;
     private final UserRepository userRepository;
     private final EventRepository eventRepository;
-
 
     @Override
     public boolean isUserAlreadyRegistered(int userId, int eventId) {
@@ -69,9 +67,9 @@ public class RegistrationService implements IRegistrationService {
         }
 
         Registration registration = new Registration();
-        
-        registration.setUser(user);
-        registration.setEvent(event);
+
+        registration.setUserId(requestDto.getUserId());
+        registration.setEventId(requestDto.getEventId());
 
         registration.setRegistrationStatus(event.isPaymentRequired()
                 ? RegistrationStatus.PENDING

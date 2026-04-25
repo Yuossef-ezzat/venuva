@@ -50,6 +50,11 @@ public class EventService implements IEventService {
             return Result.failure(new Error("MaxAttendance must be greater than 0"));
         }
 
+        if (dto.isPaymentRequired() && dto.getPrice() == null) {
+            log.warn("[WARN] EventService.add() — Price must be provided when payment is required");
+            return Result.failure(new Error("Price must be provided when payment is required"));
+        }
+
         Category category = categoryRepository.findById(dto.getCategoryId())
             .orElseThrow(() -> new RuntimeException("Category not found"));
 
@@ -66,6 +71,7 @@ public class EventService implements IEventService {
         event.setMaxAttendance(dto.getMaxAttendance());
         event.setEventStatus(dto.getEventStatus());
         event.setPaymentRequired(dto.isPaymentRequired());
+        event.setPrice(dto.getPrice());
 
         var Entity = repository.save(event);
 
@@ -127,6 +133,7 @@ public class EventService implements IEventService {
 
             AllEventsDto dto = new AllEventsDto();
 
+
             dto.setId(e.getId());
             dto.setTitle(e.getTitle());
             dto.setDate(e.getDate());
@@ -141,6 +148,9 @@ public class EventService implements IEventService {
             dto.setEventStatus(e.getEventStatus());
             dto.setPaymentRequired(e.isPaymentRequired());
             dto.setMaxAttendance(e.getMaxAttendance());
+            if(dto.isPaymentRequired()) {
+                dto.setPrice(e.getPrice());
+            }
 
             return dto;
 
@@ -178,23 +188,14 @@ public class EventService implements IEventService {
         dto.setCategoryName(
                 event.getCategory() != null ? event.getCategory().getName() : null
         );
+        
 
         dto.setEventStatus(event.getEventStatus());
         dto.setPaymentRequired(event.isPaymentRequired());
         dto.setMaxAttendance(event.getMaxAttendance());
-
-        dto.setRegistrations(
-            event.getRegistrations().stream()
-                    .map(r -> String.valueOf(r.getId()))
-                    .toList()
-        );
-
-        dto.setPayments(
-            event.getPayments().stream()
-                    .map(p -> String.valueOf(p.getId()))
-                    .toList()
-        );
-
+        if(dto.isPaymentRequired()) {
+                dto.setPrice(event.getPrice());
+        }
         log.info("[OK] EventService.getById() — Event {} retrieved", id);
         return Result.success(dto);
     }
@@ -238,17 +239,14 @@ public class EventService implements IEventService {
         }
 
         // ===== mapping =====
-        existingEvent.setTitle(dto.getTitle());
-        existingEvent.setDescription(dto.getDescription());
-        existingEvent.setDate(dto.getDate());
-        existingEvent.setLocation(dto.getLocation());
+        existingEvent.setTitle(dto.getTitle() != null ? dto.getTitle() : existingEvent.getTitle());
+        existingEvent.setDescription(dto.getDescription() != null ? dto.getDescription() : existingEvent.getDescription());
+        existingEvent.setDate(dto.getDate() != null ? dto.getDate() : existingEvent.getDate());
+        existingEvent.setLocation(dto.getLocation() != null ? dto.getLocation() : existingEvent.getLocation());
 
-        existingEvent.setOrganizer(organizer);
-        existingEvent.setCategory(category);
-
-        existingEvent.setEventStatus(dto.getEventStatus());
-        existingEvent.setPaymentRequired(dto.isPaymentRequired());
-        existingEvent.setMaxAttendance(dto.getMaxAttendance());
+        existingEvent.setEventStatus(dto.getEventStatus() != null ? dto.getEventStatus() : existingEvent.getEventStatus());
+        existingEvent.setMaxAttendance(dto.getMaxAttendance() != 0 ? dto.getMaxAttendance() : existingEvent.getMaxAttendance());
+        existingEvent.setPrice(dto.getPrice() != null ? dto.getPrice() : existingEvent.getPrice());
 
         try {
             repository.save(existingEvent);

@@ -1,6 +1,9 @@
 package com.example.venuva.Shared.Dtos.EventDtos;
 
 import com.example.venuva.Shared.Enums.EventStatus;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -8,6 +11,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
@@ -32,6 +36,7 @@ public class CreateEventDto {
     @NotNull(message = "Event status is required")
     private EventStatus eventStatus = EventStatus.SCHEDULED;
 
+    @JsonProperty("paymentRequired")
     private boolean paymentRequired;
 
     @NotNull(message = "Organizer ID is required")
@@ -39,4 +44,7 @@ public class CreateEventDto {
 
     @NotNull(message = "Category ID is required")
     private int categoryId;
+
+    @DecimalMin(value = "0.0", message = "Price must be non-negative")
+    private BigDecimal price = BigDecimal.ZERO;
 }

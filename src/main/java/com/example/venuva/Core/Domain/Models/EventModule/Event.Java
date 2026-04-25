@@ -3,6 +3,7 @@ package com.example.venuva.Core.Domain.Models.EventModule;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -39,6 +40,8 @@ public class Event {
     private EventStatus eventStatus;
 
     private boolean paymentRequired;
+    private BigDecimal price;
+
 
     // ===== Relations =====
 

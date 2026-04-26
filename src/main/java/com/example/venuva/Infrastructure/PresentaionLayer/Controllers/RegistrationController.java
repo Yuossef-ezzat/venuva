@@ -11,6 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+
 @RestController
 @RequestMapping("/api/registrations")
 @RequiredArgsConstructor
@@ -42,6 +43,7 @@ public class RegistrationController {
     // Cancel registration
     // =========================
     @DeleteMapping("/cancel")
+    @PreAuthorize("hasRole('ATTENDEE')")
     public ResponseEntity<?> cancelRegistration(@RequestBody CancleRegisrationDto dto) {
         var result = registrationService.cancelRegistration(dto);
         if (result.isSuccess()) {
@@ -50,6 +52,27 @@ public class RegistrationController {
         return ResponseUtility.toResponse(result);
     }
 
-    // simple response class
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/getNumberOfRegesters")
+    public ResponseEntity<?> getNumberOfRegesters() {
+        var result = registrationService.getNumberOfRegesters();
+        return ResponseUtility.toResponse(result);
+    }
+
+    @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANIZER')")
+    @GetMapping("/getNumberOfRegestersForEvent")
+    public ResponseEntity<?> getNumberOfRegestersForEvent(@PathVariable int eventId) {
+        var result = registrationService.getNumberOfRegestersForEvent(eventId);
+        return ResponseUtility.toResponse(result);
+    }
+
+    @PreAuthorize("hasRole('ATTENDEE')")
+    @GetMapping("/getTotalSpents")
+    public ResponseEntity<?> getTotalSpents(@PathVariable int userId) {
+        var result = registrationService.getTotalSpents(userId);
+        return ResponseUtility.toResponse(result);
+    }
+    
+        // simple response class
     public record MessageResponse(String message) {}
 }

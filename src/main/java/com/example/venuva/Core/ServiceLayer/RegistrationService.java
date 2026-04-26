@@ -14,8 +14,11 @@ import com.example.venuva.Shared.Dtos.RegisterationDto.RegistrationRequestDto;
 import com.example.venuva.Shared.Enums.RegistrationStatus;
 
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.var;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -158,5 +161,43 @@ public class RegistrationService implements IRegistrationService {
         log.info("[OK] RegistrationService.getUserRegistrations() — {} registrations retrieved for userId={}", 
                 result.size(), userId);
         return Result.success(result);
+    }
+    public Result<Integer> getNumberOfRegesters()
+    {
+        log.info("[START] RegistrationService.getNumberOfRegesters()");
+
+        long count = repository.count();
+
+        log.info("[OK] RegistrationService.getNumberOfRegesters() — Total registrations: {}", count);
+        return Result.success((int) count);
+    }
+
+    public Result<Integer> getNumberOfRegestersForEvent(int eventId)
+    {
+        log.info("[START] RegistrationService.getNumberOfRegestersForEvent() — eventId={}", eventId);
+
+        long count = repository.countByEventId(eventId);
+
+        log.info("[OK] RegistrationService.getNumberOfRegestersForEvent() — Total registrations for event {}: {}", 
+                eventId, count);
+        return Result.success((int) count);
+    }
+
+    public Result<BigDecimal> getTotalSpents(int userId)
+    {
+        List<Registration> registrations = repository.findByUserId(userId)
+        .stream()
+        .filter(r -> r.getRegistrationStatus() == RegistrationStatus.PAID)
+        .toList();
+
+        BigDecimal totalSpents = BigDecimal.ZERO;
+        for (Registration r : registrations) {
+            Event event = eventRepository.findById(r.getEventId()).orElse(null);
+            if (event != null) {
+                totalSpents = totalSpents.add(event.getPrice());
+            }
+        }
+
+        return Result.success(totalSpents);
     }
 }

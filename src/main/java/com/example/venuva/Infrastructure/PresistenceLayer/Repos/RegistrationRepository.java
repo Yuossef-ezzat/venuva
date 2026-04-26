@@ -9,7 +9,7 @@ public interface RegistrationRepository extends JpaRepository<Registration, Inte
 
     boolean existsByUserIdAndEventId(int userId, int eventId);
 
-    int countByEventId(int eventId);
+    long countByEventId(int eventId);
 
     Registration findByEventIdAndUserId(int eventId, int userId);
     

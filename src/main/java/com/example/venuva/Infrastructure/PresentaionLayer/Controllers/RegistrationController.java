@@ -60,14 +60,14 @@ public class RegistrationController {
     }
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANIZER')")
-    @GetMapping("/getNumberOfRegestersForEvent")
+    @GetMapping("/getNumberOfRegestersForEvent/{eventId}")
     public ResponseEntity<?> getNumberOfRegestersForEvent(@PathVariable int eventId) {
         var result = registrationService.getNumberOfRegestersForEvent(eventId);
         return ResponseUtility.toResponse(result);
     }
 
     @PreAuthorize("hasRole('ATTENDEE')")
-    @GetMapping("/getTotalSpents")
+    @GetMapping("/getTotalSpents/{userId}")
     public ResponseEntity<?> getTotalSpents(@PathVariable int userId) {
         var result = registrationService.getTotalSpents(userId);
         return ResponseUtility.toResponse(result);

@@ -24,8 +24,8 @@ public class AdminSevice {
     public Result<Boolean> updateOrganizer(int userId,UpdatedOrganzier updatedOrganzier) {
         log.info("Updating organizer information for user: {}", userId);
         userRepository.findById(userId).ifPresent(user -> {
-            user.setUsername(updatedOrganzier.getNewName());
-            user.setEmail(updatedOrganzier.getNewEmail());
+            user.setUsername(updatedOrganzier.getNewName() != null ? updatedOrganzier.getNewName() : user.getUsername());
+            user.setEmail(updatedOrganzier.getNewEmail() != null ? updatedOrganzier.getNewEmail() : user.getEmail());
             userRepository.save(user);
         });
         return Result.success(true);

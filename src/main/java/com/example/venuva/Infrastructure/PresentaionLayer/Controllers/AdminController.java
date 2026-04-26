@@ -2,6 +2,7 @@ package com.example.venuva.Infrastructure.PresentaionLayer.Controllers;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.venuva.Core.Domain.Abstractions.Result;
@@ -15,6 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin/organizers")
+@PreAuthorize("hasRole('ROLE_ADMIN')")
 @RequiredArgsConstructor
 @Slf4j
 public class AdminController {

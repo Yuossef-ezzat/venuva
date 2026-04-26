@@ -4,6 +4,6 @@ import lombok.Getter;
 
 @Getter
 public class UpdatedOrganzier {
-    String newName;
-    String newEmail;
+    String newName = null;
+    String newEmail = null;
 }

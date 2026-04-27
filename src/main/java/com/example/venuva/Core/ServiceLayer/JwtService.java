@@ -22,6 +22,8 @@ public class JwtService {
     private String secret;
     private long expirationMs;
     private final UserRepository userRepository;
+    private long refreshExpirationMs;
+
 
 
     private Key getSigningKey() {

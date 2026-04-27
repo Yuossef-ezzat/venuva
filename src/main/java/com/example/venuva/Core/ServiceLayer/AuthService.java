@@ -8,6 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.venuva.Core.Domain.Exceptions.DataConflictException;
+import com.example.venuva.Core.Domain.Models.UserDetails.RefreshToken;
 import com.example.venuva.Core.Domain.Models.UserDetails.Roles;
 import com.example.venuva.Core.Domain.Models.UserDetails.User;
 import com.example.venuva.Infrastructure.PresistenceLayer.Repos.UserRepository;
@@ -25,6 +26,8 @@ public class AuthService {
         private final UserRepository userRepository;
         private final PasswordEncoder passwordEncoder;
         private final JwtService jwtService;
+        private final RefreshTokenService refreshTokenService;
+
 
     // ===== Check Email =====
         public boolean checkEmail(String email) {
@@ -41,11 +44,14 @@ public class AuthService {
                 String token = jwtService.generateToken(user.getEmail(), user.getRole().name());
 
                 log.info("[OK] AuthService.getCurrentUser() — Retrieved user {}", email);
+                RefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getId());
+
                 return new AuthResponse(
                         user.getId(),
                         user.getEmail(),
                         user.getRole().name(),
-                        token
+                        token,
+                        refreshToken.getToken()   // ← new field
                 );
         }
 
@@ -66,11 +72,14 @@ public class AuthService {
                 String token = jwtService.generateToken(user.getEmail(), user.getRole().name());
 
                 log.info("[OK] AuthService.login() — User {} logged in successfully", loginDto.getEmail());
+                RefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getId());
+
                 return new AuthResponse(
                         user.getId(),
                         user.getEmail(),
                         user.getRole().name(),
-                        token
+                        token,
+                        refreshToken.getToken()   // ← new field
                 );
         }
 
@@ -98,11 +107,14 @@ public class AuthService {
                 String token = jwtService.generateToken(user.getEmail(), user.getRole().name());
 
                 log.info("[OK] AuthService.registerOrganizer() — Organizer {} registered with role=ORGANIZER", dto.getEmail());
+                RefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getId());
+
                 return new AuthResponse(
                         user.getId(),
                         user.getEmail(),
                         user.getRole().name(),
-                        token
+                        token,
+                        refreshToken.getToken()   // ← new field
                 );
         }
 
@@ -130,11 +142,36 @@ public class AuthService {
                 String token = jwtService.generateToken(user.getEmail(), user.getRole().name());
 
                 log.info("[OK] AuthService.register() — User {} registered with role=ATTENDEE", dto.getEmail());
+                RefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getId());
+
                 return new AuthResponse(
                         user.getId(),
                         user.getEmail(),
                         user.getRole().name(),
-                        token
+                        token,
+                        refreshToken.getToken()   // ← new field
                 );
         }
+
+        public AuthResponse refreshToken(String requestToken) {
+                RefreshToken refreshToken = refreshTokenService.findByToken(requestToken)
+                        .orElseThrow(() -> new RuntimeException("Refresh token not found"));
+
+                refreshTokenService.verifyExpiration(refreshToken); // throws if expired
+
+                User user = refreshToken.getUser();
+                String newAccessToken = jwtService.generateToken(user.getEmail(), user.getRole().name());
+
+                // Rotate: issue a new refresh token and invalidate the old one
+                RefreshToken newRefreshToken = refreshTokenService.createRefreshToken(user.getId());
+
+                log.info("[OK] AuthService.refreshToken() — Token refreshed for user {}", user.getEmail());
+                return new AuthResponse(
+                        user.getId(),
+                        user.getEmail(),
+                        user.getRole().name(),
+                        newAccessToken,
+                        newRefreshToken.getToken()
+                );
+                }
 }

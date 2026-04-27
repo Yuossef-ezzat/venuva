@@ -1,8 +1,11 @@
 package com.example.venuva.Infrastructure.PresentaionLayer.Controllers;
 
+import com.example.venuva.Core.Domain.Models.UserDetails.User;
 import com.example.venuva.Core.ServiceLayer.AuthService;
+import com.example.venuva.Core.ServiceLayer.RefreshTokenService;
 import com.example.venuva.Shared.Dtos.AuthDtos.AuthResponse;
 import com.example.venuva.Shared.Dtos.AuthDtos.LoginRequest;
+import com.example.venuva.Shared.Dtos.AuthDtos.RefreshTokenRequest;
 import com.example.venuva.Shared.Dtos.AuthDtos.RegisterRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
+    private final RefreshTokenService refreshTokenService;
 
 
     @PostMapping("/login")
@@ -61,5 +65,24 @@ public class AuthController {
         log.info("[PUBLIC] AuthController.checkEmail() — Checking email existence");
         boolean exists = authService.checkEmail(email);
         return ResponseEntity.ok(exists);
+    }
+
+
+    @PostMapping("/refresh-token")
+    public ResponseEntity<AuthResponse> refreshToken(
+            @Valid @RequestBody RefreshTokenRequest request) {
+        log.info("[PUBLIC] AuthController.refreshToken() — Refreshing access token");
+        AuthResponse response = authService.refreshToken(request.getRefreshToken());
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/logout")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Void> logout(@AuthenticationPrincipal UserDetails userDetails) {
+        log.info("[USER] AuthController.logout() — User: {}", userDetails.getUsername());
+        // Cast to your User entity to get the ID
+        User user = (User) userDetails;
+        refreshTokenService.deleteByUserId(user.getUserId());
+        return ResponseEntity.noContent().build();
     }
 }

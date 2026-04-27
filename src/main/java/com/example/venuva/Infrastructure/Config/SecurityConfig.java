@@ -59,6 +59,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/login").permitAll()
                 .requestMatchers("/api/auth/register").permitAll()
                 .requestMatchers("/api/registrations/register").permitAll()
+                .requestMatchers("/api/auth/refresh-token").permitAll()
                 .requestMatchers("/api/payments/callback").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/auth/register/organizer").hasRole("ADMIN")
                 .requestMatchers("/error").permitAll()

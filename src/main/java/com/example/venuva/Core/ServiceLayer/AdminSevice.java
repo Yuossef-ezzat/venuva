@@ -45,7 +45,7 @@ public class AdminSevice {
 
     public Result<List<OrganizerDto>> getAllOrganizers() {
         log.info("Retrieving all organizers");
-        var organizers = userRepository.findByRole(Roles.ROLE_ORGANIZER)
+        List<OrganizerDto> organizers = userRepository.findByRole(Roles.ORGANIZER)
                 .stream()
                 .map(user -> {
                     OrganizerDto dto = new OrganizerDto();
@@ -61,7 +61,7 @@ public class AdminSevice {
     public Result<OrganizerDto> getOrganizerById(int userId) {
         log.info("Retrieving organizer with ID: {}", userId);
         return userRepository.findById(userId)
-                .filter(user -> user.getRole() == Roles.ROLE_ORGANIZER)
+                .filter(user -> user.getRole() == Roles.ORGANIZER)
                 .map(user -> {
                     OrganizerDto dto = new OrganizerDto();
                     dto.setId(user.getId());

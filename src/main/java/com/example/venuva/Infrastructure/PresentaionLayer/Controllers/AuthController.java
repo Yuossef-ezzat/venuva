@@ -42,7 +42,7 @@ public class AuthController {
     }
 
     @PostMapping("/register/organizer")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<AuthResponse> registerOrganizer(
             @Valid @RequestBody RegisterRequest request,
             @AuthenticationPrincipal UserDetails userDetails) {

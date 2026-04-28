@@ -51,7 +51,8 @@ public class AuthService {
                         user.getEmail(),
                         user.getRole().name(),
                         token,
-                        refreshToken.getToken()   // ← new field
+                        refreshToken.getToken(),
+                        user.getUsername()
                 );
         }
 
@@ -79,7 +80,8 @@ public class AuthService {
                         user.getEmail(),
                         user.getRole().name(),
                         token,
-                        refreshToken.getToken()   // ← new field
+                        refreshToken.getToken(),
+                        user.getUsername()
                 );
         }
 
@@ -98,7 +100,7 @@ public class AuthService {
                         .email(dto.getEmail())
                         .password(passwordEncoder.encode(dto.getPassword()))
                         .username(dto.getUsername())
-                        .role(Roles.ROLE_ORGANIZER)
+                        .role(Roles.ORGANIZER)
                         .enabled(true)
                         .build();
 
@@ -114,7 +116,8 @@ public class AuthService {
                         user.getEmail(),
                         user.getRole().name(),
                         token,
-                        refreshToken.getToken()   // ← new field
+                        refreshToken.getToken(),
+                        user.getUsername()
                 );
         }
 
@@ -133,7 +136,7 @@ public class AuthService {
                         .username(dto.getUsername())
                         .email(dto.getEmail())
                         .password(passwordEncoder.encode(dto.getPassword()))
-                        .role(Roles.ROLE_ATTENDEE)
+                        .role(Roles.ATTENDEE)
                         .enabled(true)
                         .build();
                 
@@ -149,7 +152,8 @@ public class AuthService {
                         user.getEmail(),
                         user.getRole().name(),
                         token,
-                        refreshToken.getToken()   // ← new field
+                        refreshToken.getToken(),
+                        user.getUsername()
                 );
         }
 
@@ -171,7 +175,8 @@ public class AuthService {
                         user.getEmail(),
                         user.getRole().name(),
                         newAccessToken,
-                        newRefreshToken.getToken()
+                        newRefreshToken.getToken(),
+                        user.getUsername()
                 );
                 }
 }

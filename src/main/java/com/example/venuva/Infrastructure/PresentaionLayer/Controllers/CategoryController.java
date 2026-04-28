@@ -36,7 +36,7 @@ public class CategoryController {
         return ResponseUtility.toResponse(result);
     }
 
-    @GetMapping("{Id}")
+    @GetMapping("{id}")
     public ResponseEntity<?> getById(@PathVariable int id) {
         Result<?> result = categoryService.getById(id);
         return ResponseUtility.toResponse(result);
@@ -49,14 +49,14 @@ public class CategoryController {
         return ResponseUtility.toResponse(result);
     }
 
-    @PutMapping("{Id}")
+    @PutMapping("{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> update(@PathVariable int id, @RequestBody CategoryDTO category) {
         Result<?> result = categoryService.update(id, category);
         return ResponseUtility.toResponse(result);
     }
 
-    @DeleteMapping("{Id}")
+    @DeleteMapping("{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> delete(@PathVariable int id) {
         Result<?> result = categoryService.delete(id);

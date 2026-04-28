@@ -16,7 +16,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin/organizers")
-@PreAuthorize("hasRole('ROLE_ADMIN')")
 @RequiredArgsConstructor
 @Slf4j
 public class AdminController {
@@ -24,6 +23,7 @@ public class AdminController {
     private final AdminSevice adminService;
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Result<List<OrganizerDto>>> getAllOrganizers() {
         log.info("GET /api/admin/organizers - Fetching all organizers");
         Result<List<OrganizerDto>> result = adminService.getAllOrganizers();
@@ -33,6 +33,7 @@ public class AdminController {
     }
 
     @GetMapping("/{userId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Result<OrganizerDto>> getOrganizerById(@PathVariable int userId) {
         log.info("GET /api/admin/organizers/{} - Fetching organizer by ID", userId);
         Result<OrganizerDto> result = adminService.getOrganizerById(userId);
@@ -43,6 +44,7 @@ public class AdminController {
 
 
     @PutMapping("/{userId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Result<Boolean>> updateOrganizer(
             @PathVariable int userId,
             @RequestBody UpdatedOrganzier updatedOrganzier) {
@@ -55,6 +57,7 @@ public class AdminController {
 
 
     @DeleteMapping("/{userId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Result<Boolean>> deleteOrganizer(@PathVariable int userId) {
         log.info("DELETE /api/admin/organizers/{} - Deleting organizer", userId);
         Result<Boolean> result = adminService.deleteOrganizer(userId);

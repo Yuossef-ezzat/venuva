@@ -50,7 +50,7 @@ public class NotifService implements INotifService {
                     if (notif == null) return null;
 
                     return new NotifDTO(
-                            n.getNotifId(),
+                            n.getId(),
                             notif.getMessage(),
                             notif.getDate(),
                             n.getUserId(),
@@ -109,7 +109,7 @@ public class NotifService implements INotifService {
 
         notifRepo.save(notif);
 
-        Optional<List<User>> users = userRepo.findAll(u -> u.getRole() == Roles.ROLE_ATTENDEE);
+        Optional<List<User>> users = userRepo.findAll(u -> u.getRole() == Roles.ATTENDEE);
         
         int totalUsersNotified = 0;
         for (User user : users.get()) {

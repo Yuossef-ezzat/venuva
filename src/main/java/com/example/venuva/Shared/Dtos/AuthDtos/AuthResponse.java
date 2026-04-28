@@ -5,13 +5,15 @@ public class AuthResponse {
     public String email;
     public String role;
     public String token;
-    public String refreshToken; // ← ADD THIS
+    public String refreshToken;
+    public String username;
 
-    public AuthResponse(int id, String email, String role, String token, String refreshToken) {
+    public AuthResponse(int id, String email, String role, String token, String refreshToken, String username) {
         this.Id = id;
         this.email = email;
         this.role = role;
         this.token = token;
-        this.refreshToken = refreshToken; // ← ADD THIS
+        this.refreshToken = refreshToken;
+        this.username = username;
     }
 }

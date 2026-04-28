@@ -30,7 +30,7 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = RolesConverter.class)
     private Roles role;
 
     private boolean enabled = true;

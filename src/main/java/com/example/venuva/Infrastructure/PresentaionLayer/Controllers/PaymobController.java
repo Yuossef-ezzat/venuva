@@ -17,11 +17,11 @@ public class PaymobController {
 
     private final PayMobService payMobService;
 
-    // ===== POST /api/payments/pay =====
+    // ===== POST /api/Paymob/pay =====
     // Initiate a card payment — returns a PayMob iFrame URL
     // userId is passed as a query param (or extracted from JWT in production)
     @PostMapping("/pay")
-    @PreAuthorize("hasRole('USER') or hasRole('ORGANIZER') or hasRole('ADMIN')")
+@PreAuthorize("hasRole('ATTENDEE') or hasRole('ORGANIZER') or hasRole('ADMIN')")
     public ResponseEntity<?> pay(
             @RequestParam int amountCents,
             @RequestParam int userId,
@@ -29,20 +29,19 @@ public class PaymobController {
         try {
             log.info("PaymobController.pay() called with userId={}, amountCents={}", userId, amountCents);
             String iframeUrl = payMobService.payWithCard(amountCents, userId, eventId);
-            log.info("PaymobController.pay() success: Payment URL generated for userId={}", userId);
             return ResponseEntity.ok(iframeUrl);
         } catch (Exception ex) {
-            log.error("PaymobController.pay() failed: Payment initiation failed for userId={}, amount={}", 
-                    userId, amountCents, ex);
+            // ✅ اطبع الـ full exception message
+            log.error("PAYMENT FAILED - Cause: {}", ex.getMessage(), ex);
             ErrorResponse error = new ErrorResponse(
-                    "Payment initiation failed. Please try again later",
+                    "Payment failed: " + ex.getMessage(), // مؤقتاً عشان تشوف السبب
                     "PAYMENT_INIT_FAILED"
             );
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
     }
 
-    // ===== POST /api/payments/callback =====
+    // ===== POST /api/Paymob/callback =====
     // PayMob webhook — receives transaction result and verifies HMAC
     // Must be public (no auth) so PayMob servers can call it
     @PostMapping("/callback")

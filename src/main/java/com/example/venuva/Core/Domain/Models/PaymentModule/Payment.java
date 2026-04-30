@@ -42,11 +42,11 @@ public class Payment {
     // ===== Relations =====
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = true, insertable = false, updatable = false)
+    @JoinColumn(name = "registration_user_id", insertable = false, updatable = false)
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "event_id", nullable = true, insertable = false, updatable = false)
+    @JoinColumn(name = "registration_event_id", insertable = false, updatable = false)
     private Event event;
 
     // ===== Getters & Setters =====

@@ -26,14 +26,27 @@ public class Payment {
 
     private LocalDateTime transactionDate;
 
+    // ===== PayMob Integration Fields =====
+    // Store PayMob order ID for webhook correlation
+    @Column(name = "paymob_order_id")
+    private int orderId;
+
+    // Store userId and eventId for callback processing
+    // Note: These are plain fields (not relations) used to store the actual IDs during payment
+    @Column(name = "registration_user_id")
+    private int userId;
+    
+    @Column(name = "registration_event_id")
+    private int eventId;
+
     // ===== Relations =====
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = true, insertable = false, updatable = false)
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "event_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "event_id", nullable = true, insertable = false, updatable = false)
     private Event event;
 
     // ===== Getters & Setters =====
@@ -84,5 +97,29 @@ public class Payment {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public int getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(int orderId) {
+        this.orderId = orderId;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public int getEventId() {
+        return eventId;
+    }
+
+    public void setEventId(int eventId) {
+        this.eventId = eventId;
     }
 }

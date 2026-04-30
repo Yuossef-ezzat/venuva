@@ -31,3 +31,8 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# ===== ENVIRONMENT VARIABLES =====
+# Do NOT commit actual .env file with secrets
+.env
+!.env.example

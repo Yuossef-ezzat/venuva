@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -37,22 +38,18 @@ public class PayMobService {
 
     private static final String BASE_URL = "https://accept.paymob.com/api/";
 
-    // Read from environment variables (same approach as .NET version)
-    private final String apiKey = System.getenv("PAYMOB_API_KEY") != null
-            ? System.getenv("PAYMOB_API_KEY")
-            : "ZXlKaGJHY2lPaUpJVXpVeE1pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SndjbTltYVd4bFgzQnJJam94TVRNd01UZ3NJbU5zWVhOeklqb2lUV1Z5WTJoaGJuUWlMQ0p1WVcxbElqb2lhVzVwZEdsaGJDSjkuazJvdExPbXNZajFQM1FFNTBfeU1mWVBZS0U3S3VuTEpKMThRRkgzR1V0a3dXZG5wNG5kQlc3eDc1WGpOcHNyUTV0ckVPRzZlX2VkdG9jVjJDcHpzc2c=";
+    // ===== PayMob API Configuration - Injected from Environment Variables =====
+    @Value("${PAYMOB_API_KEY:ZXlKaGJHY2lPaUpJVXpVeE1pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SndjbTltYVd4bFgzQnJJam94TVRNd01UZ3NJbU5zWVhOeklqb2lUV1Z5WTJoaGJuUWlMQ0p1WVcxbElqb2lhVzVwZEdsaGJDSjkuazJvdExPbXNZajFQM1FFNTBfeU1mWVBZS0U3S3VuTEpKMThRRkgzR1V0a3dXZG5wNG5kQlc3eDc1WGpOcHNyUTV0ckVPRzZlX2VkdG9jVjJDcHpzc2c=}")
+    private String apiKey;
 
-    private final int integrationId = System.getenv("PAYMOB_INTEGRATION_ID") != null
-            ? Integer.parseInt(System.getenv("PAYMOB_INTEGRATION_ID"))
-            : 4896849;
+    @Value("${PAYMOB_INTEGRATION_ID:4896849}")
+    private int integrationId;
 
-    private final int iframeId = System.getenv("PAYMOB_IFRAME_ID") != null
-            ? Integer.parseInt(System.getenv("PAYMOB_IFRAME_ID"))
-            : 897502;
+    @Value("${PAYMOB_IFRAME_ID:897502}")
+    private int iframeId;
 
-    private final String hmacSecretKey = System.getenv("HMAC_SECRET_KEY") != null
-            ? System.getenv("HMAC_SECRET_KEY")
-            : "0DC8EF3D0DAAB2C53EC6DDD2BEA8EDD0";
+    @Value("${HMAC_SECRET_KEY:0DC8EF3D0DAAB2C53EC6DDD2BEA8EDD0}")
+    private String hmacSecretKey;
 
     // ===== STEP 1: AUTHENTICATE → GET TOKEN =====
 
@@ -165,14 +162,25 @@ public class PayMobService {
     // ===== FULL PAYMENT FLOW =====
 
     public String payWithCard(int amountCents, int userId, int eventId) {
-        log.info("[START] PayMobService.payWithCard() — amount: {} cents, userId: {}", amountCents, userId);
+        log.info("[START] PayMobService.payWithCard() — amount: {} cents, userId: {}, eventId: {}", amountCents, userId, eventId);
 
         String token = authenticate();
         int orderId = createOrder(token, amountCents);
         String paymentKey = getPaymentKey(token, orderId, amountCents, userId, eventId);
         String iframeUrl = getIframeUrl(paymentKey);
 
-        log.info("[OK] PayMobService.payWithCard() — Payment flow completed");
+        // Store a temporary payment record with userId and eventId mapping
+        // This will be used in the callback to register the user to the event
+        Payment pendingPayment = new Payment();
+        pendingPayment.setAmount(BigDecimal.valueOf(amountCents).divide(BigDecimal.valueOf(100)));
+        pendingPayment.setPaymentStatus(PaymentStatus.PENDING);
+        pendingPayment.setTransactionDate(LocalDateTime.now());
+        pendingPayment.setOrderId(orderId);
+        pendingPayment.setUserId(userId);
+        pendingPayment.setEventId(eventId);
+        paymentRepository.save(pendingPayment);
+
+        log.info("[OK] PayMobService.payWithCard() — Payment flow completed with orderId: {}", orderId);
         return iframeUrl;
     }
 
@@ -232,17 +240,32 @@ public class PayMobService {
             log.info("[OK] PayMobService.paymobCallback() — HMAC verified for transaction: {}, success: {}", 
                     obj.id, obj.success);
 
-            paymentRepository.save(new Payment() {{
-                setAmount(BigDecimal.valueOf(obj.amountCents).divide(BigDecimal.valueOf(100)));
-                setPaymentStatus(PaymentStatus.SUCCESS);
-                setTransactionDate(LocalDateTime.now());
-            }});
+            // ===== RETRIEVE STORED PAYMENT MAPPING =====
+            // Use orderId to find the stored payment with userId and eventId
+            Payment payment = paymentRepository.findByOrderId(obj.order.id)
+                    .orElseThrow(() -> new RuntimeException("Payment record not found for orderId: " + obj.order.id));
 
+            int userId = payment.getUserId();
+            int eventId = payment.getEventId();
 
-            registrationService.registerUserToEvent(new RegistrationRequestDto() {{
-                setUserId(obj.owner);
-                setEventId(obj.order.id);
-            }});
+            log.info("[INFO] PayMobService.paymobCallback() — Retrieved userId: {}, eventId: {} from payment mapping", userId, eventId);
+
+            // ===== UPDATE PAYMENT RECORD =====
+            payment.setAmount(BigDecimal.valueOf(obj.amountCents).divide(BigDecimal.valueOf(100)));
+            payment.setPaymentStatus(obj.success ? PaymentStatus.SUCCESS : PaymentStatus.FAILED);
+            payment.setTransactionDate(LocalDateTime.now());
+            paymentRepository.save(payment);
+
+            // ===== REGISTER USER TO EVENT =====
+            if (Boolean.TRUE.equals(obj.success)) {
+                registrationService.registerUserToEvent(new RegistrationRequestDto() {{
+                    setUserId(userId);
+                    setEventId(eventId);
+                }});
+                log.info("[OK] PayMobService.paymobCallback() — User {} registered to event {}", userId, eventId);
+            } else {
+                log.warn("[WARN] PayMobService.paymobCallback() — Payment unsuccessful for transaction: {}", obj.id);
+            }
 
             return Boolean.TRUE.equals(obj.success);
 

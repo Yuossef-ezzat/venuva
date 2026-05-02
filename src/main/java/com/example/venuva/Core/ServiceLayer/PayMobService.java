@@ -77,12 +77,13 @@ public class PayMobService {
     // ===== STEP 2: CREATE ORDER =====
 
     public int createOrder(String token, int amountCents) {
-        log.info("[START] PayMobService.createOrder() — amount: {} cents", amountCents);
+        log.info("[START] PayMobService.createOrder() — amount_cents: {}", amountCents);
 
         Map<String, Object> body = new HashMap<>();
         body.put("auth_token", token);
         body.put("delivery_needed", false);
-        body.put("amount_cents", amountCents * 100);
+        // `amountCents` is expected to already be in the smallest currency unit (piasters).
+        body.put("amount_cents", amountCents);
         body.put("currency", "EGP");
         body.put("items", new Object[0]);
 
@@ -104,7 +105,7 @@ public class PayMobService {
     // ===== STEP 3: GET PAYMENT KEY =====
 
     public String getPaymentKey(String token, int orderId, int amountCents, int userId, int eventId) {
-        log.info("[START] PayMobService.getPaymentKey() — orderId: {}, amount: {} cents", orderId, amountCents);
+        log.info("[START] PayMobService.getPaymentKey() — orderId: {}, amount_cents: {}", orderId, amountCents);
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
@@ -126,7 +127,8 @@ public class PayMobService {
 
         Map<String, Object> body = new HashMap<>();
         body.put("auth_token", token);
-        body.put("amount_cents", amountCents * 100);
+        // `amountCents` is already in piasters (smallest unit). Do not multiply again.
+        body.put("amount_cents", amountCents);
         body.put("expiration", 3600);
         body.put("order_id", orderId);
         body.put("billing_data", billingData);
@@ -161,8 +163,11 @@ public class PayMobService {
 
     // ===== FULL PAYMENT FLOW =====
 
-    public String payWithCard(int amountCents, int userId, int eventId) {
-        log.info("[START] PayMobService.payWithCard() — amount: {} cents, userId: {}, eventId: {}", amountCents, userId, eventId);
+    public String payWithCard(int amount, int userId, int eventId) {
+        log.info("[START] PayMobService.payWithCard() — amount (EGP): {}, userId: {}, eventId: {}", amount, userId, eventId);
+
+        // Convert EGP to piasters (smallest currency unit) once
+        int amountCents = amount * 100;
 
         String token = authenticate();
         int orderId = createOrder(token, amountCents);
@@ -172,7 +177,8 @@ public class PayMobService {
         // Store a temporary payment record with userId and eventId mapping
         // This will be used in the callback to register the user to the event
         Payment pendingPayment = new Payment();
-        pendingPayment.setAmount(BigDecimal.valueOf(amountCents).divide(BigDecimal.valueOf(100)));
+        // Store the amount in main currency unit (EGP)
+        pendingPayment.setAmount(BigDecimal.valueOf(amount));
         pendingPayment.setPaymentStatus(PaymentStatus.PENDING);
         pendingPayment.setTransactionDate(LocalDateTime.now());
         pendingPayment.setOrderId(orderId);

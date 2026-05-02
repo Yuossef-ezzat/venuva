@@ -23,12 +23,12 @@ public class PaymobController {
     @PostMapping("/pay")
 @PreAuthorize("hasRole('ATTENDEE') or hasRole('ORGANIZER') or hasRole('ADMIN')")
     public ResponseEntity<?> pay(
-            @RequestParam int amountCents,
+            @RequestParam int amount,
             @RequestParam int userId,
             @RequestParam int eventId) {
         try {
-            log.info("PaymobController.pay() called with userId={}, amountCents={}", userId, amountCents);
-            String iframeUrl = payMobService.payWithCard(amountCents, userId, eventId);
+            log.info("PaymobController.pay() called with userId={}, amount={}", userId, amount);
+            String iframeUrl = payMobService.payWithCard(amount, userId, eventId);
             return ResponseEntity.ok(iframeUrl);
         } catch (Exception ex) {
             // ✅ اطبع الـ full exception message

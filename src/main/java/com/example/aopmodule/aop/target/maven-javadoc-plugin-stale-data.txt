@@ -1,0 +1,95 @@
+@options
+@packages
+@argfile
+-classpath
+'C:/Users/Yuossef ezzat/.m2/repository/org/springframework/boot/spring-boot-starter-aop/2.7.14/spring-boot-starter-aop-2.7.14.jar;C:/Users/Yuossef ezzat/.m2/repository/org/springframework/boot/spring-boot-starter/2.7.14/spring-boot-starter-2.7.14.jar;C:/Users/Yuossef ezzat/.m2/repository/org/springframework/boot/spring-boot/2.7.14/spring-boot-2.7.14.jar;C:/Users/Yuossef ezzat/.m2/repository/org/springframework/boot/spring-boot-autoconfigure/2.7.14/spring-boot-autoconfigure-2.7.14.jar;C:/Users/Yuossef ezzat/.m2/repository/jakarta/annotation/jakarta.annotation-api/1.3.5/jakarta.annotation-api-1.3.5.jar;C:/Users/Yuossef ezzat/.m2/repository/org/yaml/snakeyaml/1.30/snakeyaml-1.30.jar;C:/Users/Yuossef ezzat/.m2/repository/org/springframework/spring-aop/5.3.29/spring-aop-5.3.29.jar;C:/Users/Yuossef ezzat/.m2/repository/org/springframework/boot/spring-boot-starter-web/2.7.14/spring-boot-starter-web-2.7.14.jar;C:/Users/Yuossef ezzat/.m2/repository/org/springframework/boot/spring-boot-starter-json/2.7.14/spring-boot-starter-json-2.7.14.jar;C:/Users/Yuossef ezzat/.m2/repository/com/fasterxml/jackson/core/jackson-databind/2.13.5/jackson-databind-2.13.5.jar;C:/Users/Yuossef ezzat/.m2/repository/com/fasterxml/jackson/core/jackson-annotations/2.13.5/jackson-annotations-2.13.5.jar;C:/Users/Yuossef ezzat/.m2/repository/com/fasterxml/jackson/core/jackson-core/2.13.5/jackson-core-2.13.5.jar;C:/Users/Yuossef ezzat/.m2/repository/com/fasterxml/jackson/datatype/jackson-datatype-jdk8/2.13.5/jackson-datatype-jdk8-2.13.5.jar;C:/Users/Yuossef ezzat/.m2/repository/com/fasterxml/jackson/datatype/jackson-datatype-jsr310/2.13.5/jackson-datatype-jsr310-2.13.5.jar;C:/Users/Yuossef ezzat/.m2/repository/com/fasterxml/jackson/module/jackson-module-parameter-names/2.13.5/jackson-module-parameter-names-2.13.5.jar;C:/Users/Yuossef ezzat/.m2/repository/org/springframework/boot/spring-boot-starter-tomcat/2.7.14/spring-boot-starter-tomcat-2.7.14.jar;C:/Users/Yuossef ezzat/.m2/repository/org/apache/tomcat/embed/tomcat-embed-core/9.0.78/tomcat-embed-core-9.0.78.jar;C:/Users/Yuossef ezzat/.m2/repository/org/apache/tomcat/embed/tomcat-embed-el/9.0.78/tomcat-embed-el-9.0.78.jar;C:/Users/Yuossef ezzat/.m2/repository/org/apache/tomcat/embed/tomcat-embed-websocket/9.0.78/tomcat-embed-websocket-9.0.78.jar;C:/Users/Yuossef ezzat/.m2/repository/org/springframework/spring-web/5.3.29/spring-web-5.3.29.jar;C:/Users/Yuossef ezzat/.m2/repository/org/springframework/spring-webmvc/5.3.29/spring-webmvc-5.3.29.jar;C:/Users/Yuossef ezzat/.m2/repository/org/springframework/security/spring-security-core/5.7.10/spring-security-core-5.7.10.jar;C:/Users/Yuossef ezzat/.m2/repository/org/springframework/security/spring-security-crypto/5.7.10/spring-security-crypto-5.7.10.jar;C:/Users/Yuossef ezzat/.m2/repository/org/springframework/spring-beans/5.3.29/spring-beans-5.3.29.jar;C:/Users/Yuossef ezzat/.m2/repository/org/springframework/spring-context/5.3.29/spring-context-5.3.29.jar;C:/Users/Yuossef ezzat/.m2/repository/org/springframework/spring-core/5.3.29/spring-core-5.3.29.jar;C:/Users/Yuossef ezzat/.m2/repository/org/springframework/spring-jcl/5.3.29/spring-jcl-5.3.29.jar;C:/Users/Yuossef ezzat/.m2/repository/org/springframework/spring-expression/5.3.29/spring-expression-5.3.29.jar;C:/Users/Yuossef ezzat/.m2/repository/org/aspectj/aspectjrt/1.9.21/aspectjrt-1.9.21.jar;C:/Users/Yuossef ezzat/.m2/repository/org/aspectj/aspectjweaver/1.9.21/aspectjweaver-1.9.21.jar;C:/Users/Yuossef ezzat/.m2/repository/javax/servlet/javax.servlet-api/4.0.1/javax.servlet-api-4.0.1.jar;C:/Users/Yuossef ezzat/.m2/repository/org/springframework/boot/spring-boot-starter-logging/2.7.14/spring-boot-starter-logging-2.7.14.jar;C:/Users/Yuossef ezzat/.m2/repository/ch/qos/logback/logback-classic/1.2.12/logback-classic-1.2.12.jar;C:/Users/Yuossef ezzat/.m2/repository/ch/qos/logback/logback-core/1.2.12/logback-core-1.2.12.jar;C:/Users/Yuossef ezzat/.m2/repository/org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar;C:/Users/Yuossef ezzat/.m2/repository/org/apache/logging/log4j/log4j-to-slf4j/2.17.2/log4j-to-slf4j-2.17.2.jar;C:/Users/Yuossef ezzat/.m2/repository/org/apache/logging/log4j/log4j-api/2.17.2/log4j-api-2.17.2.jar;C:/Users/Yuossef ezzat/.m2/repository/org/slf4j/jul-to-slf4j/1.7.36/jul-to-slf4j-1.7.36.jar'
+-encoding
+'UTF-8'
+-protected
+-source
+'11'
+-sourcepath
+'D:/projects/AOP Module/aop/src/main/java;D:/projects/AOP Module/aop/target/generated-sources/annotations'
+-author
+-bottom
+'Copyright &#169; 2026. All rights reserved.'
+-charset
+'UTF-8'
+-d
+'D:/projects/AOP Module/aop/target/apidocs'
+-docencoding
+'UTF-8'
+-doctitle
+'AOP Starter 1.0.0 API'
+-linkoffline
+'https://docs.oracle.com/en/java/javase/11/docs/api' 'D:/projects/AOP Module/aop/target/javadoc-bundle-options'
+-use
+-version
+-windowtitle
+'AOP Starter 1.0.0 API'
+com.example.AOP.Annotation
+com.example.AOP.aspects
+com.example.AOP.config
+com.example
+'D:/projects/AOP Module/aop/src/main/java/com/example/AOP/Annotation/Cacheable.java'
+'D:/projects/AOP Module/aop/src/main/java/com/example/AOP/Annotation/HandleException.java'
+'D:/projects/AOP Module/aop/src/main/java/com/example/AOP/Annotation/Loggable.java'
+'D:/projects/AOP Module/aop/src/main/java/com/example/AOP/aspects/CachingAspect.java'
+'D:/projects/AOP Module/aop/src/main/java/com/example/AOP/aspects/ExceptionHandlingAspect.java'
+'D:/projects/AOP Module/aop/src/main/java/com/example/AOP/aspects/LoggingAspect.java'
+'D:/projects/AOP Module/aop/src/main/java/com/example/AOP/config/AopAutoConfiguration.java'
+'D:/projects/AOP Module/aop/src/main/java/com/example/Main.java'
+C:\Users\Yuossef ezzat\.m2\repository\org\springframework\boot\spring-boot-starter-aop\2.7.14\spring-boot-starter-aop-2.7.14.jar = 1777665888660
+C:\Users\Yuossef ezzat\.m2\repository\org\springframework\boot\spring-boot-starter\2.7.14\spring-boot-starter-2.7.14.jar = 1777665888658
+C:\Users\Yuossef ezzat\.m2\repository\org\springframework\boot\spring-boot\2.7.14\spring-boot-2.7.14.jar = 1777665892564
+C:\Users\Yuossef ezzat\.m2\repository\org\springframework\boot\spring-boot-autoconfigure\2.7.14\spring-boot-autoconfigure-2.7.14.jar = 1777665892564
+C:\Users\Yuossef ezzat\.m2\repository\jakarta\annotation\jakarta.annotation-api\1.3.5\jakarta.annotation-api-1.3.5.jar = 1777665888670
+C:\Users\Yuossef ezzat\.m2\repository\org\yaml\snakeyaml\1.30\snakeyaml-1.30.jar = 1777665889944
+C:\Users\Yuossef ezzat\.m2\repository\org\springframework\spring-aop\5.3.29\spring-aop-5.3.29.jar = 1777665889987
+C:\Users\Yuossef ezzat\.m2\repository\org\springframework\boot\spring-boot-starter-web\2.7.14\spring-boot-starter-web-2.7.14.jar = 1777665888860
+C:\Users\Yuossef ezzat\.m2\repository\org\springframework\boot\spring-boot-starter-json\2.7.14\spring-boot-starter-json-2.7.14.jar = 1777665889095
+C:\Users\Yuossef ezzat\.m2\repository\com\fasterxml\jackson\core\jackson-databind\2.13.5\jackson-databind-2.13.5.jar = 1777665894792
+C:\Users\Yuossef ezzat\.m2\repository\com\fasterxml\jackson\core\jackson-annotations\2.13.5\jackson-annotations-2.13.5.jar = 1777665890406
+C:\Users\Yuossef ezzat\.m2\repository\com\fasterxml\jackson\core\jackson-core\2.13.5\jackson-core-2.13.5.jar = 1777665891544
+C:\Users\Yuossef ezzat\.m2\repository\com\fasterxml\jackson\datatype\jackson-datatype-jdk8\2.13.5\jackson-datatype-jdk8-2.13.5.jar = 1777665890839
+C:\Users\Yuossef ezzat\.m2\repository\com\fasterxml\jackson\datatype\jackson-datatype-jsr310\2.13.5\jackson-datatype-jsr310-2.13.5.jar = 1777665891632
+C:\Users\Yuossef ezzat\.m2\repository\com\fasterxml\jackson\module\jackson-module-parameter-names\2.13.5\jackson-module-parameter-names-2.13.5.jar = 1777665891776
+C:\Users\Yuossef ezzat\.m2\repository\org\springframework\boot\spring-boot-starter-tomcat\2.7.14\spring-boot-starter-tomcat-2.7.14.jar = 1777665891827
+C:\Users\Yuossef ezzat\.m2\repository\org\apache\tomcat\embed\tomcat-embed-core\9.0.78\tomcat-embed-core-9.0.78.jar = 1777665898484
+C:\Users\Yuossef ezzat\.m2\repository\org\apache\tomcat\embed\tomcat-embed-el\9.0.78\tomcat-embed-el-9.0.78.jar = 1777665892617
+C:\Users\Yuossef ezzat\.m2\repository\org\apache\tomcat\embed\tomcat-embed-websocket\9.0.78\tomcat-embed-websocket-9.0.78.jar = 1777665893408
+C:\Users\Yuossef ezzat\.m2\repository\org\springframework\spring-web\5.3.29\spring-web-5.3.29.jar = 1777665894958
+C:\Users\Yuossef ezzat\.m2\repository\org\springframework\spring-webmvc\5.3.29\spring-webmvc-5.3.29.jar = 1777665894738
+C:\Users\Yuossef ezzat\.m2\repository\org\springframework\security\spring-security-core\5.7.10\spring-security-core-5.7.10.jar = 1777665894187
+C:\Users\Yuossef ezzat\.m2\repository\org\springframework\security\spring-security-crypto\5.7.10\spring-security-crypto-5.7.10.jar = 1777665894360
+C:\Users\Yuossef ezzat\.m2\repository\org\springframework\spring-beans\5.3.29\spring-beans-5.3.29.jar = 1777665895658
+C:\Users\Yuossef ezzat\.m2\repository\org\springframework\spring-context\5.3.29\spring-context-5.3.29.jar = 1777665897403
+C:\Users\Yuossef ezzat\.m2\repository\org\springframework\spring-core\5.3.29\spring-core-5.3.29.jar = 1777665898151
+C:\Users\Yuossef ezzat\.m2\repository\org\springframework\spring-jcl\5.3.29\spring-jcl-5.3.29.jar = 1777665895173
+C:\Users\Yuossef ezzat\.m2\repository\org\springframework\spring-expression\5.3.29\spring-expression-5.3.29.jar = 1777665895967
+C:\Users\Yuossef ezzat\.m2\repository\org\aspectj\aspectjrt\1.9.21\aspectjrt-1.9.21.jar = 1777665896295
+C:\Users\Yuossef ezzat\.m2\repository\org\aspectj\aspectjweaver\1.9.21\aspectjweaver-1.9.21.jar = 1777665898766
+C:\Users\Yuossef ezzat\.m2\repository\javax\servlet\javax.servlet-api\4.0.1\javax.servlet-api-4.0.1.jar = 1777665896668
+C:\Users\Yuossef ezzat\.m2\repository\org\springframework\boot\spring-boot-starter-logging\2.7.14\spring-boot-starter-logging-2.7.14.jar = 1777665896905
+C:\Users\Yuossef ezzat\.m2\repository\ch\qos\logback\logback-classic\1.2.12\logback-classic-1.2.12.jar = 1777665897399
+C:\Users\Yuossef ezzat\.m2\repository\ch\qos\logback\logback-core\1.2.12\logback-core-1.2.12.jar = 1777665898061
+C:\Users\Yuossef ezzat\.m2\repository\org\slf4j\slf4j-api\1.7.36\slf4j-api-1.7.36.jar = 1729256112585
+C:\Users\Yuossef ezzat\.m2\repository\org\apache\logging\log4j\log4j-to-slf4j\2.17.2\log4j-to-slf4j-2.17.2.jar = 1777665897599
+C:\Users\Yuossef ezzat\.m2\repository\org\apache\logging\log4j\log4j-api\2.17.2\log4j-api-2.17.2.jar = 1777665897973
+C:\Users\Yuossef ezzat\.m2\repository\org\slf4j\jul-to-slf4j\1.7.36\jul-to-slf4j-1.7.36.jar = 1777665898060
+D:\projects\AOP Module\aop\src\main\java = 1777665376409
+D:\projects\AOP Module\aop\target\generated-sources\annotations = 1777669888624
+D:\projects\AOP Module\aop\target\apidocs\allclasses-index.html = 1777669893674
+D:\projects\AOP Module\aop\target\apidocs\allpackages-index.html = 1777669893676
+D:\projects\AOP Module\aop\target\apidocs\element-list = 1777669893517
+D:\projects\AOP Module\aop\target\apidocs\help-doc.html = 1777669893705
+D:\projects\AOP Module\aop\target\apidocs\index-all.html = 1777669893691
+D:\projects\AOP Module\aop\target\apidocs\index.html = 1777669893643
+D:\projects\AOP Module\aop\target\apidocs\member-search-index.js = 1777669893681
+D:\projects\AOP Module\aop\target\apidocs\module-search-index.js = 1777669893677
+D:\projects\AOP Module\aop\target\apidocs\overview-summary.html = 1777669893696
+D:\projects\AOP Module\aop\target\apidocs\overview-tree.html = 1777669893636
+D:\projects\AOP Module\aop\target\apidocs\package-search-index.js = 1777669893678
+D:\projects\AOP Module\aop\target\apidocs\search.html = 1777669893694
+D:\projects\AOP Module\aop\target\apidocs\tag-search-index.js = 1777669893682
+D:\projects\AOP Module\aop\target\apidocs\type-search-index.js = 1777669893680

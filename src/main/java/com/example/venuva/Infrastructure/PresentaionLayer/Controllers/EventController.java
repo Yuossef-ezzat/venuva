@@ -1,5 +1,6 @@
 package com.example.venuva.Infrastructure.PresentaionLayer.Controllers;
 
+import com.example.aopmodule.aop.src.main.java.com.example.AOP.Annotation.HandleException;
 import com.example.venuva.Core.Domain.Abstractions.Result;
 import com.example.venuva.Core.ServiceAbstraction.IEventService;
 import com.example.venuva.Infrastructure.Config.ResponseUtility;
@@ -29,6 +30,7 @@ public class EventController {
     }
 
     @GetMapping("/{id}")
+    @HandleException 
     public ResponseEntity<?> getById(@PathVariable int id) {
         Result<DetailedEventDto> result = eventService.getById(id);
         return ResponseUtility.toResponse(result);
@@ -36,6 +38,7 @@ public class EventController {
 
     @PostMapping
     @PreAuthorize("hasRole('ORGANIZER') or hasRole('ADMIN')")
+    @HandleException
     public ResponseEntity<?> create(@Valid @RequestBody CreateEventDto dto) {
         Result<Integer> result = eventService.add(dto);
         return ResponseUtility.toResponse(result, HttpStatus.CREATED);

@@ -1,6 +1,7 @@
 package com.example.venuva.Core.ServiceLayer;
 
 
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,6 +19,8 @@ import com.example.venuva.Shared.Dtos.EventDtos.AllEventsDto;
 import com.example.venuva.Shared.Dtos.EventDtos.CreateEventDto;
 import com.example.venuva.Shared.Dtos.EventDtos.DetailedEventDto;
 import com.example.venuva.Core.Domain.Abstractions.Error;
+import com.example.aopmodule.aop.src.main.java.com.example.AOP.Annotation.Cacheable;
+import com.example.aopmodule.aop.src.main.java.com.example.AOP.Annotation.Loggable;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -36,6 +39,8 @@ public class EventService implements IEventService {
 
 
     @Override
+    @Loggable(value = "Create Event", logResult = false)
+
     public Result<Integer> add(CreateEventDto dto) {
         log.info("[START] EventService.add() — title='{}', organizerId={}, categoryId={}", 
                 dto.getTitle(), dto.getOrganizerId(), dto.getCategoryId());
@@ -119,6 +124,8 @@ public class EventService implements IEventService {
     }
 
     @Override
+    @Loggable(value = "Get All Events", logArguments = false, logResult = false)
+    @Cacheable(key = "all-Events", duration = 600)
     public Result<List<AllEventsDto>> getAll() {
         log.info("[START] EventService.getAll()");
 
@@ -161,6 +168,7 @@ public class EventService implements IEventService {
     }
 
     @Override
+    @Loggable(value = "Get Event By ID")
     public Result<DetailedEventDto> getById(Integer id) {
         log.info("[START] EventService.getById() — eventId={}", id);
 
@@ -201,6 +209,7 @@ public class EventService implements IEventService {
     }
 
     @Override
+    @Loggable(value = "Update Event")
     public Result<Boolean> update(int id, DetailedEventDto dto) {
         log.info("[START] EventService.update() — eventId={}", id);
 

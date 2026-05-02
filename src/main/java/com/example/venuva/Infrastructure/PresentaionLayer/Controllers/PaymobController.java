@@ -23,12 +23,24 @@ public class PaymobController {
     @PostMapping("/pay")
 @PreAuthorize("hasRole('ATTENDEE') or hasRole('ORGANIZER') or hasRole('ADMIN')")
     public ResponseEntity<?> pay(
-            @RequestParam int amount,
+            @RequestParam(required = false) Integer amount,
+            @RequestParam(required = false) Integer amountCents,
             @RequestParam int userId,
             @RequestParam int eventId) {
         try {
-            log.info("PaymobController.pay() called with userId={}, amount={}", userId, amount);
-            String iframeUrl = payMobService.payWithCard(amount, userId, eventId);
+            // Accept either `amount` (EGP) or `amountCents` (smallest unit). Prefer `amount` when provided.
+            int amountToUse;
+            if (amount != null) {
+                amountToUse = amount;
+            } else if (amountCents != null) {
+                // convert piasters to EGP
+                amountToUse = amountCents / 100;
+            } else {
+                throw new IllegalArgumentException("Required request parameter 'amount' or 'amountCents' is missing");
+            }
+
+            log.info("PaymobController.pay() called with userId={}, amount(EGP)={}", userId, amountToUse);
+            String iframeUrl = payMobService.payWithCard(amountToUse, userId, eventId);
             return ResponseEntity.ok(iframeUrl);
         } catch (Exception ex) {
             // ✅ اطبع الـ full exception message

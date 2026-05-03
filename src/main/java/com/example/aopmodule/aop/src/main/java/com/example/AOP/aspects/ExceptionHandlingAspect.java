@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import com.example.aopmodule.aop.src.main.java.com.example.AOP.Annotation.HandleException;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,19 +22,19 @@ public class ExceptionHandlingAspect {
     private static final Logger logger = LoggerFactory.getLogger(ExceptionHandlingAspect.class);
 
  
-    @Around("@annotation(io.github.microservices.aop.annotation.HandleException)")
-    public Object handleException(ProceedingJoinPoint joinPoint) throws Throwable {
+    @Around("@annotation(handleEx)")
+    public Object handleException(ProceedingJoinPoint joinPoint, HandleException handleEx) throws Throwable {
         try {
             return joinPoint.proceed();
         } catch (IllegalArgumentException e) {
-            logger.warn("خطأ في المدخلات: {}", e.getMessage());
-            return createErrorResponse(HttpStatus.BAD_REQUEST, "المدخلات غير صحيحة", e);
+            logger.warn("Invalid input: {}", e.getMessage());
+            return createErrorResponse(HttpStatus.BAD_REQUEST, "Invalid input", e);
         } catch (NullPointerException e) {
-            logger.error("خطأ Null Pointer: {}", e.getMessage());
-            return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "خطأ داخلي في النظام", e);
+            logger.error("Null pointer error: {}", e.getMessage());
+            return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Internal system error", e);
         } catch (Exception e) {
-            logger.error("خطأ غير متوقع: {}", e.getMessage(), e);
-            return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "حدث خطأ غير متوقع", e);
+            logger.error("Unexpected error: {}", e.getMessage(), e);
+            return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred", e);
         }
     }
 

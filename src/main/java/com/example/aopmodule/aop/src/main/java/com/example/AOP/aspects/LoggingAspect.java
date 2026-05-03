@@ -24,12 +24,12 @@ public class LoggingAspect {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
 
-        logger.info(" بدء تنفيذ: {}.{}", className, methodName);
+        logger.info("Starting execution: {}.{}", className, methodName);
         
         if (loggable.logArguments()) {
             Object[] args = joinPoint.getArgs();
             if (args.length > 0) {
-                logger.debug(" المدخلات: {}", (Object) args);
+                logger.debug("Arguments: {}", (Object) args);
             }
         }
 
@@ -37,16 +37,16 @@ public class LoggingAspect {
             Object result = joinPoint.proceed();
             stopWatch.stop();
 
-            logger.info("اكتمل بنجاح: {}.{} في {} ms", className, methodName, stopWatch.getLastTaskTimeMillis());
+            logger.info("Completed successfully: {}.{} in {} ms", className, methodName, stopWatch.getLastTaskTimeMillis());
             
             if (loggable.logResult() && result != null) {
-                logger.debug("النتيجة: {}", result);
+                logger.debug("Result: {}", result);
             }
             return result;
 
         } catch (Throwable throwable) {
             stopWatch.stop();
-            logger.error(" خطأ في: {}.{} بعد {} ms",
+            logger.error("Error in: {}.{} after {} ms",
                     className, methodName, stopWatch.getLastTaskTimeMillis(), throwable);
             throw throwable;
         }

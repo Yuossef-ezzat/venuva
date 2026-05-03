@@ -1,6 +1,5 @@
 package com.example.venuva.Infrastructure.PresentaionLayer.Controllers;
 
-import com.example.aopmodule.aop.src.main.java.com.example.AOP.Annotation.Cacheable;
 import com.example.aopmodule.aop.src.main.java.com.example.AOP.Annotation.HandleException;
 import com.example.venuva.Core.Domain.Abstractions.Result;
 import com.example.venuva.Core.ServiceAbstraction.INotifService;
@@ -25,7 +24,6 @@ public class NotificationController {
 
     // GET /api/notifications/{userId}
     @GetMapping("/{userId}")
-    @Cacheable(key = "all-Notifications-{userId}", duration = 600)
     @HandleException
     public ResponseEntity<?> getNotifs(@PathVariable int userId) {
         Result<List<NotifDTO>> result = notifService.getNotifsById(userId);

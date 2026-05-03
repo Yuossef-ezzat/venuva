@@ -8,5 +8,5 @@ import java.lang.annotation.*;
 @Documented
 public @interface Cacheable {
     String key() default "";
-    long duration() default 300; // بالثواني
+    long duration() default 300; // seconds
 }

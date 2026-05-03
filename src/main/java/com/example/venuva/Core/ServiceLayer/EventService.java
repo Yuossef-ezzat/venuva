@@ -19,6 +19,7 @@ import com.example.venuva.Shared.Dtos.EventDtos.AllEventsDto;
 import com.example.venuva.Shared.Dtos.EventDtos.CreateEventDto;
 import com.example.venuva.Shared.Dtos.EventDtos.DetailedEventDto;
 import com.example.venuva.Core.Domain.Abstractions.Error;
+import com.example.aopmodule.aop.src.main.java.com.example.AOP.Annotation.CacheInvalidate;
 import com.example.aopmodule.aop.src.main.java.com.example.AOP.Annotation.Cacheable;
 import com.example.aopmodule.aop.src.main.java.com.example.AOP.Annotation.Loggable;
 
@@ -40,7 +41,7 @@ public class EventService implements IEventService {
 
     @Override
     @Loggable(value = "Create Event", logResult = false)
-
+    @CacheInvalidate(keys = { "all-Events" })
     public Result<Integer> add(CreateEventDto dto) {
         log.info("[START] EventService.add() — title='{}', organizerId={}, categoryId={}", 
                 dto.getTitle(), dto.getOrganizerId(), dto.getCategoryId());
@@ -93,6 +94,7 @@ public class EventService implements IEventService {
     }
 
     @Override
+    @CacheInvalidate(keys = { "all-Events" })
     public Result<Boolean> delete(Integer id) {
         log.info("[START] EventService.delete() — eventId={}", id);
 
@@ -210,6 +212,7 @@ public class EventService implements IEventService {
 
     @Override
     @Loggable(value = "Update Event")
+    @CacheInvalidate(keys = { "all-Events" })
     public Result<Boolean> update(int id, DetailedEventDto dto) {
         log.info("[START] EventService.update() — eventId={}", id);
 

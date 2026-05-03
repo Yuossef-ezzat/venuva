@@ -11,16 +11,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity                              // ← أضف
-@Table(name = "registrations")       // ← أضف
+@Entity
+@Table(name = "registrations")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class Registration {
 
-    @Id                              // ← أضف
-    @GeneratedValue(strategy = GenerationType.IDENTITY)  // ← أضف
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @Column(name = "user_id")

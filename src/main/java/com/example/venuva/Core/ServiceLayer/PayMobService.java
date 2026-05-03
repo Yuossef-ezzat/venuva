@@ -86,7 +86,7 @@ public class PayMobService {
         body.put("auth_token", token);
         body.put("delivery_needed", false);
         // `amountCents` is expected to already be in the smallest currency unit (piasters).
-        body.put("amount_cents", amountCents);
+        body.put("amount_cents", amountCents * 100);
         body.put("currency", "EGP");
         body.put("items", new Object[0]);
 
@@ -132,7 +132,7 @@ public class PayMobService {
         Map<String, Object> body = new HashMap<>();
         body.put("auth_token", token);
         // `amountCents` is already in piasters (smallest unit). Do not multiply again.
-        body.put("amount_cents", amountCents);
+        body.put("amount_cents", amountCents * 100);
         body.put("expiration", 3600);
         body.put("order_id", orderId);
         body.put("billing_data", billingData);

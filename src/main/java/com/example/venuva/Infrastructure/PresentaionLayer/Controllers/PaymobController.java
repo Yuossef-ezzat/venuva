@@ -46,10 +46,10 @@ public class PaymobController {
             String iframeUrl = payMobService.payWithCard(amountToUse, userId, eventId);
             return ResponseEntity.ok(iframeUrl);
         } catch (Exception ex) {
-            // ✅ اطبع الـ full exception message
+            // Log full exception details for diagnosis
             log.error("PAYMENT FAILED - Cause: {}", ex.getMessage(), ex);
             ErrorResponse error = new ErrorResponse(
-                    "Payment failed: " + ex.getMessage(), // مؤقتاً عشان تشوف السبب
+                    "Payment failed: " + ex.getMessage(), // Temporary: surface cause for debugging
                     "PAYMENT_INIT_FAILED"
             );
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);

@@ -1,5 +1,10 @@
 package com.example.aopmodule.aop.src.main.java.com.example.AOP.aspects;
 
+import com.example.aopmodule.aop.src.main.java.com.example.AOP.Annotation.Cacheable;
+import com.example.aopmodule.aop.src.main.java.com.example.AOP.cache.MethodResultCache;
+import com.example.aopmodule.aop.src.main.java.com.example.AOP.support.CacheKeyResolution;
+
+import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -7,61 +12,37 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.example.aopmodule.aop.src.main.java.com.example.AOP.Annotation.Cacheable;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-@Component
 @Aspect
+@Component
+@RequiredArgsConstructor
 public class CachingAspect {
 
     private static final Logger logger = LoggerFactory.getLogger(CachingAspect.class);
-    private final Map<String, CacheEntry> cache = new ConcurrentHashMap<>();
 
-    /**
-     * Around Advice - Caching
-     */
+    private final MethodResultCache methodResultCache;
+
     @Around("@annotation(cacheable)")
     public Object cache(ProceedingJoinPoint joinPoint, Cacheable cacheable) throws Throwable {
-        String cacheKey = generateCacheKey(joinPoint, cacheable);
-        long cacheDuration = cacheable.duration() * 1000;
-        
-        if (cache.containsKey(cacheKey)) {
-            CacheEntry entry = cache.get(cacheKey);
-            if (System.currentTimeMillis() - entry.timestamp < cacheDuration) {
-                logger.info("From Cache: {} (age: {} ms)",
-                        cacheKey, System.currentTimeMillis() - entry.timestamp);
-                return entry.value;
-            } else {
-                cache.remove(cacheKey);
+        String cacheKey = CacheKeyResolution.resolveKey(cacheable.key(), joinPoint);
+        long cacheDurationMillis = cacheable.duration() * 1000;
+
+        MethodResultCache.CacheEntry existing = methodResultCache.get(cacheKey);
+        if (existing != null) {
+            long ageMs = System.currentTimeMillis() - existing.timestamp;
+            if (ageMs < cacheDurationMillis) {
+                logger.info("From Cache: {} (age: {} ms)", cacheKey, ageMs);
+                return existing.value;
             }
+            methodResultCache.removeExact(cacheKey);
         }
 
         long startTime = System.currentTimeMillis();
         Object result = joinPoint.proceed();
         long duration = System.currentTimeMillis() - startTime;
 
-        cache.put(cacheKey, new CacheEntry(result, System.currentTimeMillis()));
+        methodResultCache.put(cacheKey, result, System.currentTimeMillis());
         logger.info("From Caching: {} ({} ms)", cacheKey, duration);
 
         return result;
-    }
-
-    private String generateCacheKey(ProceedingJoinPoint joinPoint, Cacheable cacheable) {
-        if (cacheable.key() != null && !cacheable.key().isEmpty()) {
-            return cacheable.key();
-        }
-        return joinPoint.getSignature().getName();
-    }
-
-    private static class CacheEntry {
-        Object value;
-        long timestamp;
-
-        CacheEntry(Object value, long timestamp) {
-            this.value = value;
-            this.timestamp = timestamp;
-        }
     }
 }

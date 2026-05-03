@@ -13,6 +13,8 @@ import com.example.venuva.Core.Domain.Models.NotificationModule.*;
 import com.example.venuva.Core.Domain.Models.RegistrationModules.Registration;
 import com.example.venuva.Core.Domain.Models.UserDetails.Roles;
 import com.example.venuva.Core.Domain.Models.UserDetails.User;
+import com.example.aopmodule.aop.src.main.java.com.example.AOP.Annotation.CacheInvalidate;
+import com.example.aopmodule.aop.src.main.java.com.example.AOP.Annotation.Cacheable;
 import com.example.venuva.Core.ServiceAbstraction.INotifService;
 import com.example.venuva.Infrastructure.PresistenceLayer.Repos.*;
 import com.example.venuva.Shared.Dtos.Notifs.NotifDTO;
@@ -33,6 +35,7 @@ public class NotifService implements INotifService {
     private final UserRepository userRepo;
     
     @Override
+    @Cacheable(key = "notifications-user-{id}", duration = 600)
     public Result<List<NotifDTO>> getNotifsById(int id) {
         log.info("NotifService.getNotifsById() called with userId={}", id);
         
@@ -64,6 +67,7 @@ public class NotifService implements INotifService {
     }
 
     @Override
+    @CacheInvalidate(keyPrefixes = { "notifications-user-" })
     public Result<NotifDTO> markNotifAsRead(int notifId) {
         log.info("[START] NotifService.markNotifAsRead() — notifId={}", notifId);
         
@@ -98,6 +102,7 @@ public class NotifService implements INotifService {
     }
 
     @Override
+    @CacheInvalidate(keyPrefixes = { "notifications-user-" })
     public Result<Object> sendNotification(String message) {
         log.info("[START] NotifService.sendNotification() — Broadcasting message");
 
@@ -132,6 +137,7 @@ public class NotifService implements INotifService {
     }
 
     @Override
+    @CacheInvalidate(keyPrefixes = { "notifications-user-" })
     public Result<Object> sendNotificationForRegisterdUserAtEvent(List<Registration> registrations, String message) {
         log.info("[START] NotifService.sendNotificationForRegisterdUserAtEvent() — {} registrations", 
                 registrations.size());

@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.aopmodule.aop.src.main.java.com.example.AOP.Annotation.CacheInvalidate;
 import com.example.aopmodule.aop.src.main.java.com.example.AOP.Annotation.Loggable;
 import com.example.venuva.Core.Domain.Abstractions.Error;
 import com.example.venuva.Core.Domain.Abstractions.Result;
@@ -31,7 +32,8 @@ public class CategoryService {
     public Result<Category> getById(int id) {
         return categoryRepository.findById(id).map(Result::success).orElse(Result.failure(new Error(null, "Category not found")));
     }
-     @Loggable(value = "Add Category", logArguments = false, logResult = false) 
+    @Loggable(value = "Add Category", logArguments = false, logResult = false)
+    @CacheInvalidate(keys = { "all-Events" })
     public Result<CategoryDTO> add(CategoryDTO category) {
         Category newCategory = new Category();
         newCategory.setName(category.getName());
@@ -41,6 +43,7 @@ public class CategoryService {
     }
 
     @Loggable(value = "Update Category", logArguments = false, logResult = false)
+    @CacheInvalidate(keys = { "all-Events" })
     public Result<Boolean> update(int id, CategoryDTO category) {
         Category existingCategory = categoryRepository.findById(id).orElse(null);
         if (existingCategory == null) {
@@ -52,7 +55,8 @@ public class CategoryService {
         return Result.success(true);
     }
 
-    @Loggable(value = "Delete Category", logArguments = false, logResult = false)   
+    @Loggable(value = "Delete Category", logArguments = false, logResult = false)
+    @CacheInvalidate(keys = { "all-Events" })
     public Result<Boolean> delete(int id) {
         Category existingCategory = categoryRepository.findById(id).orElse(null);
         if (existingCategory == null) {

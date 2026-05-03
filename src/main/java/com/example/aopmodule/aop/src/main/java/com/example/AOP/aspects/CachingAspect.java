@@ -30,7 +30,7 @@ public class CachingAspect {
         if (cache.containsKey(cacheKey)) {
             CacheEntry entry = cache.get(cacheKey);
             if (System.currentTimeMillis() - entry.timestamp < cacheDuration) {
-                logger.info("من الـ Cache: {} (العمر: {} ms)",
+                logger.info("From Cache: {} (age: {} ms)",
                         cacheKey, System.currentTimeMillis() - entry.timestamp);
                 return entry.value;
             } else {
@@ -43,7 +43,7 @@ public class CachingAspect {
         long duration = System.currentTimeMillis() - startTime;
 
         cache.put(cacheKey, new CacheEntry(result, System.currentTimeMillis()));
-        logger.info("تم الـ Caching: {} ({} ms)", cacheKey, duration);
+        logger.info("From Caching: {} ({} ms)", cacheKey, duration);
 
         return result;
     }

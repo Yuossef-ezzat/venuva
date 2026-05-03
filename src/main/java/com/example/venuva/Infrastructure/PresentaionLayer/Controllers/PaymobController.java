@@ -1,5 +1,6 @@
 package com.example.venuva.Infrastructure.PresentaionLayer.Controllers;
 
+import com.example.aopmodule.aop.src.main.java.com.example.AOP.Annotation.HandleException;
 import com.example.venuva.Core.ServiceLayer.PayMobService;
 import com.example.venuva.Shared.Dtos.ErrorResponse;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,9 @@ public class PaymobController {
     // Initiate a card payment — returns a PayMob iFrame URL
     // userId is passed as a query param (or extracted from JWT in production)
     @PostMapping("/pay")
-@PreAuthorize("hasRole('ATTENDEE') or hasRole('ORGANIZER') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ATTENDEE') or hasRole('ORGANIZER') or hasRole('ADMIN')")
+    @HandleException
+
     public ResponseEntity<?> pay(
             @RequestParam(required = false) Integer amount,
             @RequestParam(required = false) Integer amountCents,
@@ -57,6 +60,7 @@ public class PaymobController {
     // PayMob webhook — receives transaction result and verifies HMAC
     // Must be public (no auth) so PayMob servers can call it
     @PostMapping("/callback")
+    @HandleException
     public ResponseEntity<Void> callback(
             @RequestBody PayMobService.PaymobCallbackPayload payload,
             @RequestParam(value = "hmac", required = false) String hmacHeader) {

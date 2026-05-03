@@ -2,6 +2,7 @@ package com.example.venuva.Core.ServiceLayer;
 
 import org.springframework.stereotype.Service;
 
+import com.example.aopmodule.aop.src.main.java.com.example.AOP.Annotation.Loggable;
 import com.example.venuva.Core.Domain.Abstractions.Result;
 import com.example.venuva.Core.Domain.Models.UserDetails.Roles;
 import com.example.venuva.Infrastructure.PresistenceLayer.Repos.UserRepository;
@@ -21,6 +22,7 @@ public class AdminSevice {
 
     private final UserRepository userRepository;
 
+    @Loggable(value = "Update Organizer", logArguments = false, logResult = false)
     public Result<Boolean> updateOrganizer(int userId,UpdatedOrganzier updatedOrganzier) {
         log.info("Updating organizer information for user: {}", userId);
         userRepository.findById(userId).ifPresent(user -> {
@@ -31,6 +33,7 @@ public class AdminSevice {
         return Result.success(true);
     }
 
+    @Loggable(value = "Delete Organizer", logArguments = false, logResult = false)
     public Result<Boolean> deleteOrganizer(int userId) {
         log.info("Deleting user with ID: {}", userId);
         if (userRepository.existsById(userId)) {
@@ -43,6 +46,7 @@ public class AdminSevice {
     }
 
 
+    @Loggable(value = "Get All Organizers", logArguments = false, logResult = false)
     public Result<List<OrganizerDto>> getAllOrganizers() {
         log.info("Retrieving all organizers");
         List<OrganizerDto> organizers = userRepository.findByRole(Roles.ORGANIZER)
@@ -58,6 +62,7 @@ public class AdminSevice {
         return Result.success(organizers);
     }
 
+    @Loggable(value = "Get Organizer by ID", logArguments = false, logResult = false)
     public Result<OrganizerDto> getOrganizerById(int userId) {
         log.info("Retrieving organizer with ID: {}", userId);
         return userRepository.findById(userId)

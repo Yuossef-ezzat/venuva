@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.example.aopmodule.aop.src.main.java.com.example.AOP.Annotation.Loggable;
 import com.example.venuva.Core.Domain.Exceptions.DataConflictException;
 import com.example.venuva.Core.Domain.Models.UserDetails.RefreshToken;
 import com.example.venuva.Core.Domain.Models.UserDetails.Roles;
@@ -56,6 +57,7 @@ public class AuthService {
                 );
         }
 
+            @Loggable(value = "Login", logArguments = false, logResult = false)
         public AuthResponse login(LoginRequest loginDto) {
                 log.info("[START] AuthService.login() — email={}", loginDto.getEmail());
 
@@ -85,6 +87,7 @@ public class AuthService {
                 );
         }
 
+        @Loggable(value = "Register Organizer", logArguments = false, logResult = false)        
         public AuthResponse registerOrganizer(RegisterRequest dto) {
                 log.info("[START] AuthService.registerOrganizer() — username='{}', email={}, role=ORGANIZER", 
                         dto.getUsername(), dto.getEmail());
@@ -120,7 +123,8 @@ public class AuthService {
                         user.getUsername()
                 );
         }
-
+        
+        @Loggable(value = "Register Attendee", logArguments = false, logResult = false)
         public AuthResponse register(RegisterRequest dto) {
                 log.info("[START] AuthService.register() — username='{}', email={}, role=ATTENDEE", 
                         dto.getUsername(), dto.getEmail());
@@ -157,6 +161,8 @@ public class AuthService {
                 );
         }
 
+
+        @Loggable(value = "Refresh Token", logArguments = false, logResult = false)
         public AuthResponse refreshToken(String requestToken) {
                 RefreshToken refreshToken = refreshTokenService.findByToken(requestToken)
                         .orElseThrow(() -> new RuntimeException("Refresh token not found"));

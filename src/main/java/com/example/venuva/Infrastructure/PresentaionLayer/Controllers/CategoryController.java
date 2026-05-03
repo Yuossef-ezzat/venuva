@@ -8,6 +8,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.aopmodule.aop.src.main.java.com.example.AOP.Annotation.HandleException;
 import com.example.venuva.Core.Domain.Abstractions.Result;
 import com.example.venuva.Core.ServiceLayer.CategoryService;
 import com.example.venuva.Infrastructure.Config.ResponseUtility;
@@ -31,12 +32,14 @@ public class CategoryController {
     private CategoryService categoryService;
 
     @GetMapping
+    @HandleException
     public ResponseEntity<?> getAll() {
         Result<List<CategoryDTO>> result = categoryService.getAll();
         return ResponseUtility.toResponse(result);
     }
 
     @GetMapping("{id}")
+    @HandleException
     public ResponseEntity<?> getById(@PathVariable int id) {
         Result<?> result = categoryService.getById(id);
         return ResponseUtility.toResponse(result);
@@ -44,6 +47,7 @@ public class CategoryController {
     
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
+    @HandleException
     public ResponseEntity<?> add(@RequestBody CategoryDTO category) {
         Result<?> result = categoryService.add(category);
         return ResponseUtility.toResponse(result);
@@ -51,6 +55,7 @@ public class CategoryController {
 
     @PutMapping("{id}")
     @PreAuthorize("hasRole('ADMIN')")
+    @HandleException
     public ResponseEntity<?> update(@PathVariable int id, @RequestBody CategoryDTO category) {
         Result<?> result = categoryService.update(id, category);
         return ResponseUtility.toResponse(result);
@@ -58,6 +63,7 @@ public class CategoryController {
 
     @DeleteMapping("{id}")
     @PreAuthorize("hasRole('ADMIN')")
+    @HandleException
     public ResponseEntity<?> delete(@PathVariable int id) {
         Result<?> result = categoryService.delete(id);
         return ResponseUtility.toResponse(result);

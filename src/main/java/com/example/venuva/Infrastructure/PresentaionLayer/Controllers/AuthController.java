@@ -1,5 +1,6 @@
 package com.example.venuva.Infrastructure.PresentaionLayer.Controllers;
 
+import com.example.aopmodule.aop.src.main.java.com.example.AOP.Annotation.HandleException;
 import com.example.venuva.Core.Domain.Models.UserDetails.User;
 import com.example.venuva.Core.ServiceLayer.AuthService;
 import com.example.venuva.Core.ServiceLayer.RefreshTokenService;
@@ -28,6 +29,7 @@ public class AuthController {
 
 
     @PostMapping("/login")
+    @HandleException
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
         log.info("[PUBLIC] AuthController.login() — Action: User login attempt");
         AuthResponse response = authService.login(request);
@@ -35,6 +37,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
+    @HandleException
     public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
         log.info("[PUBLIC] AuthController.register() — Action: New user registration");
         AuthResponse response = authService.register(request);
@@ -43,6 +46,7 @@ public class AuthController {
 
     @PostMapping("/register/organizer")
     @PreAuthorize("hasRole('ADMIN')")
+    @HandleException    
     public ResponseEntity<AuthResponse> registerOrganizer(
             @Valid @RequestBody RegisterRequest request,
             @AuthenticationPrincipal UserDetails userDetails) {
@@ -53,6 +57,7 @@ public class AuthController {
 
     @GetMapping("/me")
     @PreAuthorize("isAuthenticated()")
+    @HandleException
     public ResponseEntity<AuthResponse> getCurrentUser(
             @AuthenticationPrincipal UserDetails userDetails) {
         log.info("[USER] AuthController.getCurrentUser() — User: {}", userDetails.getUsername());
@@ -61,6 +66,7 @@ public class AuthController {
     }
 
     @GetMapping("/check-email")
+    @HandleException
     public ResponseEntity<Boolean> checkEmail(@RequestParam String email) {
         log.info("[PUBLIC] AuthController.checkEmail() — Checking email existence");
         boolean exists = authService.checkEmail(email);
@@ -69,6 +75,7 @@ public class AuthController {
 
 
     @PostMapping("/refresh-token")
+    @HandleException
     public ResponseEntity<AuthResponse> refreshToken(
             @Valid @RequestBody RefreshTokenRequest request) {
         log.info("[PUBLIC] AuthController.refreshToken() — Refreshing access token");
@@ -78,6 +85,7 @@ public class AuthController {
 
     @PostMapping("/logout")
     @PreAuthorize("isAuthenticated()")
+    @HandleException
     public ResponseEntity<Void> logout(@AuthenticationPrincipal UserDetails userDetails) {
         log.info("[USER] AuthController.logout() — User: {}", userDetails.getUsername());
         // Cast to your User entity to get the ID

@@ -1,5 +1,6 @@
 package com.example.venuva.Infrastructure.PresentaionLayer.Controllers;
 
+import com.example.aopmodule.aop.src.main.java.com.example.AOP.Annotation.HandleException;
 import com.example.venuva.Core.ServiceAbstraction.IRegistrationService;
 import com.example.venuva.Infrastructure.Config.ResponseUtility;
 import com.example.venuva.Shared.Dtos.RegisterationDto.CancleRegisrationDto;
@@ -24,6 +25,8 @@ public class RegistrationController {
     // Register user to event
     // =========================
     @PostMapping("/register")
+    @PreAuthorize("hasRole('ATTENDEE')")
+    @HandleException
     public ResponseEntity<?> register(@RequestBody RegistrationRequestDto requestDto) {
         var result = registrationService.registerUserToEvent(requestDto);
         return ResponseUtility.toResponse(result, HttpStatus.CREATED);
@@ -34,6 +37,7 @@ public class RegistrationController {
     // =========================
     @GetMapping("/{userId}")
     @PreAuthorize("hasRole('ATTENDEE') or hasRole('ADMIN')")
+    @HandleException
     public ResponseEntity<?> getUserRegistrations(@PathVariable int userId) {
         var result = registrationService.getUserRegistrations(userId);
         return ResponseUtility.toResponse(result);
@@ -44,6 +48,7 @@ public class RegistrationController {
     // =========================
     @DeleteMapping("/cancel")
     @PreAuthorize("hasRole('ATTENDEE')")
+    @HandleException
     public ResponseEntity<?> cancelRegistration(@RequestBody CancleRegisrationDto dto) {
         var result = registrationService.cancelRegistration(dto);
         if (result.isSuccess()) {
@@ -54,6 +59,7 @@ public class RegistrationController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/getNumberOfRegesters")
+    @HandleException
     public ResponseEntity<?> getNumberOfRegesters() {
         var result = registrationService.getNumberOfRegesters();
         return ResponseUtility.toResponse(result);
@@ -61,6 +67,7 @@ public class RegistrationController {
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANIZER')")
     @GetMapping("/getNumberOfRegestersForEvent/{eventId}")
+    @HandleException
     public ResponseEntity<?> getNumberOfRegestersForEvent(@PathVariable int eventId) {
         var result = registrationService.getNumberOfRegestersForEvent(eventId);
         return ResponseUtility.toResponse(result);
@@ -68,6 +75,7 @@ public class RegistrationController {
 
     @PreAuthorize("hasRole('ATTENDEE')")
     @GetMapping("/getTotalSpents/{userId}")
+    @HandleException
     public ResponseEntity<?> getTotalSpents(@PathVariable int userId) {
         var result = registrationService.getTotalSpents(userId);
         return ResponseUtility.toResponse(result);

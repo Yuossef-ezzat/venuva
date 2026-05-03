@@ -5,9 +5,6 @@ package com.example.venuva.Core.ServiceLayer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-// import org.apache.el.stream.Optional;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 import com.example.venuva.Core.Domain.Abstractions.Error;
@@ -34,6 +31,7 @@ public class NotifService implements INotifService {
     private final UserNotificationRepository userNotifRepoGeneric;
     private final NotificationRepository notifRepo;
     private final UserRepository userRepo;
+    
     @Override
     public Result<List<NotifDTO>> getNotifsById(int id) {
         log.info("NotifService.getNotifsById() called with userId={}", id);

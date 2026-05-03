@@ -1,5 +1,6 @@
 package com.example.venuva.Core.ServiceLayer;
 
+import com.example.aopmodule.aop.src.main.java.com.example.AOP.Annotation.Loggable;
 import com.example.venuva.Core.Domain.Models.PaymentModule.Payment;
 import com.example.venuva.Core.Domain.Models.UserDetails.User;
 import com.example.venuva.Infrastructure.PresistenceLayer.Repos.PaymentRepo;
@@ -53,6 +54,7 @@ public class PayMobService {
 
     // ===== STEP 1: AUTHENTICATE → GET TOKEN =====
 
+    @Loggable(value = "Authenticate", logArguments = false, logResult = false)
     public String authenticate() {
         log.info("[START] PayMobService.authenticate() — Authenticating with PayMob");
 
@@ -75,7 +77,8 @@ public class PayMobService {
     }
 
     // ===== STEP 2: CREATE ORDER =====
-
+    
+    @Loggable(value = "Create Order", logArguments = false, logResult = false)
     public int createOrder(String token, int amountCents) {
         log.info("[START] PayMobService.createOrder() — amount_cents: {}", amountCents);
 
@@ -104,6 +107,7 @@ public class PayMobService {
 
     // ===== STEP 3: GET PAYMENT KEY =====
 
+    @Loggable(value = "Get Payment Key", logArguments = false, logResult = false)
     public String getPaymentKey(String token, int orderId, int amountCents, int userId, int eventId) {
         log.info("[START] PayMobService.getPaymentKey() — orderId: {}, amount_cents: {}", orderId, amountCents);
 
@@ -152,6 +156,7 @@ public class PayMobService {
 
     // ===== STEP 4: BUILD IFRAME URL =====
 
+    @Loggable(value = "Get IFrame URL", logArguments = false, logResult = false)
     public String getIframeUrl(String paymentKey) {
         String url = String.format(
                 "https://accept.paymob.com/api/acceptance/iframes/%d?payment_token=%s",
@@ -163,6 +168,7 @@ public class PayMobService {
 
     // ===== FULL PAYMENT FLOW =====
 
+    @Loggable(value = "Pay with Card", logArguments = false, logResult = false)
     public String payWithCard(int amount, int userId, int eventId) {
         log.info("[START] PayMobService.payWithCard() — amount (EGP): {}, userId: {}, eventId: {}", amount, userId, eventId);
 
@@ -191,7 +197,7 @@ public class PayMobService {
     }
 
     // ===== CALLBACK VERIFICATION =====
-
+    @Loggable(value = "Process Callback", logArguments = false, logResult = false)
     public boolean paymobCallback(PaymobCallbackPayload payload, String hmacHeader) {
         try {
             log.info("[START] PayMobService.paymobCallback() — Processing payment notification");

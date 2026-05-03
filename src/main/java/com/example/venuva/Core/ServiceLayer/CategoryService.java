@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.aopmodule.aop.src.main.java.com.example.AOP.Annotation.Loggable;
 import com.example.venuva.Core.Domain.Abstractions.Error;
 import com.example.venuva.Core.Domain.Abstractions.Result;
 import com.example.venuva.Core.Domain.Models.EventModule.Category;
@@ -16,6 +17,7 @@ public class CategoryService {
     @Autowired
     private CategoryRepository categoryRepository;
 
+    @Loggable(value = "Get All Categories", logArguments = false, logResult = false)
     public Result<List<CategoryDTO>> getAll() {
         return Result.success(categoryRepository.findAll().stream().map(category -> {
             CategoryDTO dto = new CategoryDTO();
@@ -24,11 +26,12 @@ public class CategoryService {
             return dto;
         }).toList());
     }
-    
+
+    @Loggable(value = "Get Category by ID", logArguments = false, logResult = false)
     public Result<Category> getById(int id) {
         return categoryRepository.findById(id).map(Result::success).orElse(Result.failure(new Error(null, "Category not found")));
     }
-
+     @Loggable(value = "Add Category", logArguments = false, logResult = false) 
     public Result<CategoryDTO> add(CategoryDTO category) {
         Category newCategory = new Category();
         newCategory.setName(category.getName());
@@ -37,6 +40,7 @@ public class CategoryService {
         return Result.success(category);
     }
 
+    @Loggable(value = "Update Category", logArguments = false, logResult = false)
     public Result<Boolean> update(int id, CategoryDTO category) {
         Category existingCategory = categoryRepository.findById(id).orElse(null);
         if (existingCategory == null) {
@@ -48,6 +52,7 @@ public class CategoryService {
         return Result.success(true);
     }
 
+    @Loggable(value = "Delete Category", logArguments = false, logResult = false)   
     public Result<Boolean> delete(int id) {
         Category existingCategory = categoryRepository.findById(id).orElse(null);
         if (existingCategory == null) {
